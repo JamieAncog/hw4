@@ -6,7 +6,7 @@
 using namespace std;
 
 
-int main(int argc, char *argv[])
+/*int main(int argc, char *argv[])
 {
     // Binary Search Tree tests
     BinarySearchTree<char,int> bt;
@@ -45,4 +45,14 @@ int main(int argc, char *argv[])
     at.remove('b');
 
     return 0;
+}
+*/
+
+int main(int argc, char *argv[])
+{
+    // Binary Search Tree tests
+    BinarySearchTree<char,int> bt;
+    bt.insert(std::make_pair('a',1));
+    bt.insert(std::make_pair('b',2));
+    bt.print();
 }

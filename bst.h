@@ -248,6 +248,7 @@ protected:
 
     // Add helper functions here
     void insertHelper(Node<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
+    Node<Key, Value>* findHelper(Node<Key,Value>* current, const Key& k) const;
 
 protected:
     Node<Key, Value>* root_;
@@ -267,6 +268,7 @@ template<class Key, class Value>
 BinarySearchTree<Key, Value>::iterator::iterator(Node<Key,Value> *ptr)
 {
     // TODO
+    current_ = ptr;
 }
 
 /**
@@ -276,7 +278,7 @@ template<class Key, class Value>
 BinarySearchTree<Key, Value>::iterator::iterator() 
 {
     // TODO
-
+    current_ = NULL;
 }
 
 /**
@@ -309,6 +311,7 @@ BinarySearchTree<Key, Value>::iterator::operator==(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
+    return (current_ == rhs.current_);
 }
 
 /**
@@ -321,7 +324,7 @@ BinarySearchTree<Key, Value>::iterator::operator!=(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
-
+    return (current_ != rhs.current_);
 }
 
 
@@ -333,7 +336,8 @@ typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
-
+    ++current_;
+    return *this;
 }
 
 
@@ -524,6 +528,16 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::getSmallestNode() const
 {
     // TODO
+    if (root_ == NULL){
+        return NULL;
+    }
+    else {
+        Node<Key,Value>* temp = root_;
+        while (temp->getLeft() != NULL){
+            temp = temp->getLeft();
+        }
+        return temp;
+    }
 }
 
 /**
@@ -532,9 +546,40 @@ BinarySearchTree<Key, Value>::getSmallestNode() const
 * exists
 */
 template<typename Key, typename Value>
+Node<Key, Value>* BinarySearchTree<Key, Value>::findHelper(Node<Key,Value>* current, const Key& key) const
+{
+    if (current->getKey() == key){
+        return current;
+    }
+    else if (key < current->getKey()){
+        if (current->getLeft() == NULL){
+            return NULL;
+        }
+        else {
+            return findHelper(current->getLeft(), key);
+        }
+    }
+    else {
+        if (current->getRight() == NULL){
+            return NULL;
+        }
+        else {
+            return findHelper(current->getRight(), key);
+        }
+    }
+}
+
+
+template<typename Key, typename Value>
 Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) const
 {
     // TODO
+    if (root_ == NULL) {
+        return NULL;
+    }
+    else {
+        return findHelper(root_, key);
+    }
 }
 
 /**
@@ -544,6 +589,8 @@ template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::isBalanced() const
 {
     // TODO
+    //delete this
+    return true;
 }
 
 
