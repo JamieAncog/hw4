@@ -247,7 +247,7 @@ protected:
     virtual void nodeSwap( Node<Key,Value>* n1, Node<Key,Value>* n2) ;
 
     // Add helper functions here
-
+    void insertHelper(Node<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
 
 protected:
     Node<Key, Value>* root_;
@@ -356,12 +356,14 @@ template<class Key, class Value>
 BinarySearchTree<Key, Value>::BinarySearchTree() 
 {
     // TODO
+    root_ = NULL;
 }
 
 template<typename Key, typename Value>
 BinarySearchTree<Key, Value>::~BinarySearchTree()
 {
     // TODO
+    BinarySearchTree<Key, Value>::clear();
 
 }
 
@@ -442,11 +444,45 @@ Value const & BinarySearchTree<Key, Value>::operator[](const Key& key) const
 * overwrite the current value with the updated value.
 */
 template<class Key, class Value>
-void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
-{
-    // TODO
+void insertHelper(Node<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair)
+{ 
+    if (current->getKey() == keyValuePair.first()){
+        current->setValue(keyValuePair.second);
+    }
+    else if (current->getLeft() == NULL && current->getRight() == NULL){
+        Node<Key, Value>* next = new Node(keyValuePair.first, keyValuePair.second, current);
+        if (keyValuePair.first < current->getKey()){
+            current->setLeft(next);
+        }
+        else {
+            current->setRight(next);
+        }
+    }
+    else if (keyValuePair.first < current->getKey()){
+        insertHelper(current->getLeft(), keyValuePair);
+    }
+    else {
+        insertHelper(current->getRight(), keyValuePair);
+    }
 }
 
+
+template<class Key, class Value>
+void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
+{
+    if (root_ == NULL){
+        root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
+    }
+    else if (keyValuePair.first > root_->getKey()) {
+        Node<Key,Value>* temp = root_;
+        root_ =  new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
+        root_->setLeft(temp);
+    }
+    else {
+        return;
+        insertHelper(root_, keyValuePair);
+    }
+}
 
 /**
 * A remove method to remove a specific key from a Binary Search Tree.
