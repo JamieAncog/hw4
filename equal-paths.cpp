@@ -3,6 +3,7 @@
 
 #endif
 
+#include <iostream>
 #include "equal-paths.h"
 using namespace std;
 
@@ -34,15 +35,10 @@ bool equalPaths(Node * root)
     else if (isLeaf(root->left->left) && isLeaf(root->left->left) && !isLeaf(root->right->left) && !isLeaf(root->right->right)){
         return false;
     }
-    else if (!isLeaf(root->left->left) && !isLeaf(root->left->left) && isLeaf(root->right->left) && isLeaf(root->right->right)){
-        return false;
-    }
     else {
-        equalPaths(root->left);
-        equalPaths(root->right);
+        return (equalPaths(root->left) && equalPaths(root->right));
     }
-    return true;
-
+    return false;
 }
 
 bool isLeaf(Node* node){
