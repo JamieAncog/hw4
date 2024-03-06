@@ -499,6 +499,25 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
+    Node<Key, Value>* temp = internalFind(key);
+    Node<Key, Value>* parent = temp->getParent();
+    if (temp->getLeft() == NULL && temp->getRight == NULL){
+        if (parent->getValue() > key)){
+            parent->setLeft(NULL);
+        }
+        else {
+            parent->setRight(NULL);
+        }
+        delete temp;
+    }
+    else if (temp->getLeft() != NULL || temp->getRight() != NULL){
+        //promote temp child
+        //delete temp
+    }
+    else {
+        //swap temp with its predecessor
+        //delete temp
+    }
 }
 
 
@@ -508,6 +527,21 @@ Node<Key, Value>*
 BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
 {
     // TODO
+    Node<Key,Value>* temp = NULL;
+    if (current == NULL){
+        return NULL;
+    }
+    else if (current->getLeft() == NULL){
+        return NULL;
+    }
+    else {
+        temp = current->getLeft();
+        while (temp->getRight() != NULL){
+            temp = temp->getRight();
+        }
+        return temp;
+    }
+
 }
 
 
