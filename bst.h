@@ -501,8 +501,12 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     // TODO
     Node<Key, Value>* temp = internalFind(key);
     Node<Key, Value>* parent = temp->getParent();
-    if (temp->getLeft() == NULL && temp->getRight == NULL){
-        if (parent->getValue() > key)){
+    bool left = false;
+    if (key < parent->getKey()){
+        left = true;
+    }
+    if (temp->getLeft() == NULL && temp->getRight() == NULL){
+        if (left){
             parent->setLeft(NULL);
         }
         else {
@@ -510,13 +514,41 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         }
         delete temp;
     }
-    else if (temp->getLeft() != NULL || temp->getRight() != NULL){
+    else if (temp->getLeft() == NULL || temp->getRight() == NULL){
+        //find child
+        Node<Key, Value>* child = temp->getLeft();
+        if (child == NULL){
+            child = temp->getRight();
+        }
         //promote temp child
+        if (left){
+            parent->setLeft(child);
+        }
+        else {
+            parent->setRight(child);
+        }
         //delete temp
+        delete temp;
     }
     else {
         //swap temp with its predecessor
+        //set pred's parent to NULL
+        Node<Key,Value>* pred = predecessor(temp);
+        if (pred->getKey() < pred->getParent()->getKey()){
+            pred->getParent()->setLeft(NULL);
+        }
+        else {
+            pred->getParent()->setRight(NULL);
+        }
+        //put pred in temp's spot
+        if (left){
+            parent->setLeft(pred);
+        }
+        else {
+            parent->setRight(pred);
+        }
         //delete temp
+        delete temp;
     }
 }
 
