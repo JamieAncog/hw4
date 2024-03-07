@@ -479,18 +479,15 @@ void BinarySearchTree<Key, Value>::insertHelper(Node<Key,Value>* current, const 
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
+    root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
     if (root_ == NULL){
         root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
     }
-    else if (keyValuePair.first > root_->getKey()) {
-        Node<Key,Value>* temp = root_;
-        root_ =  new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
-        root_->setLeft(temp);
-        temp->setParent(root_);
-    }
+    /*
     else {
         insertHelper(root_, keyValuePair);
     }
+    */
 }
 
 /**
