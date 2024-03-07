@@ -742,7 +742,7 @@ int BinarySearchTree<Key, Value>::getHeight(Node<Key,Value>* curr){
 		return 0;
 	}
 	else {
-		return 1 + getHeight(curr->left) + getHeight(curr->right);
+		return 1 + getHeight(curr->getLeft()) + getHeight(curr->getRight());
 	}
 }
 
@@ -752,14 +752,14 @@ bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value> *root) {
 	if (root == NULL){
 		return true;
 	}
-	else if (getHeight(root->left) - getHeight(root->right) > 1){
+	else if (getHeight(root->getLeft()) - getHeight(root->getRight()) > 1){
 		temp = false;
 	}
-	else if (getHeight(root->right) - getHeight(root->left) > 1){
+	else if (getHeight(root->getRight()) - getHeight(root->getLeft()) > 1){
 		temp = false;
 	}
-	bool temp2 = isBalancedHelper(root->left);
-	bool temp3 = isBalancedHelper(root->right);
+	bool temp2 = isBalancedHelper(root->getLeft());
+	bool temp3 = isBalancedHelper(root->getRight());
 	return (temp && temp2 && temp3);
 
 }
