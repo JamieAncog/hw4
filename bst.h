@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <utility>
 
+using namespace std;
+
 /**
  * A templated class for a Node in a search tree.
  * The getters for parent/left/right are virtual so
@@ -314,7 +316,7 @@ BinarySearchTree<Key, Value>::iterator::operator==(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
-    return (current_ == rhs.current_);
+    return (current_->getItem() == rhs.current_->getItem());
 }
 
 /**
@@ -327,7 +329,7 @@ BinarySearchTree<Key, Value>::iterator::operator!=(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
-    return (current_ != rhs.current_);
+    return (current_->getItem() != rhs.current_->getItem());
 }
 
 
@@ -484,6 +486,7 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
         Node<Key,Value>* temp = root_;
         root_ =  new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
         root_->setLeft(temp);
+        temp->setParent(root_);
     }
     else {
         insertHelper(root_, keyValuePair);
@@ -583,17 +586,26 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key,Value>* curr)
     if (curr == NULL){
         return;
     }
-    if (curr->getLeft() == NULL && curr->getRight() == NULL){
-        Node<Key,Value>* temp = root_;
-        root_ = NULL;
+
+    Node<Key,Value>* left = curr->getLeft();
+    Node<Key,Value>* right = curr->getRight();
+    Node<Key,Value>* parent = curr->getParent();
+    if (!left && !right){
+        cout << "hi" << endl;
+        Node<Key,Value>* temp = curr;
+        if (parent){
+            if (curr->getKey() < parent->getKey()){
+                parent->setLeft(NULL);
+            }
+            else {
+                parent->setRight(NULL);
+            }
+        }
         delete temp;
-        return;
     }
-    clearHelper(curr->getLeft());
-    clearHelper(curr->getRight());
-    Node<Key,Value>* temp = curr;
-    curr = NULL;
-    delete temp;
+    clearHelper(left);
+    clearHelper(right);
+    clearHelper(parent);
 }
 
 /**
