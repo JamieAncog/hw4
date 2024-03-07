@@ -341,24 +341,17 @@ typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
-    if (current_ != NULL){
-        if (current_->getParent() == NULL){
+    if (!(current_->getParent() == NULL && current_->getRight() == NULL)){
+        if (current_->getRight() != NULL){
+            current_ = current_->getRight();
             while (current_->getLeft() != NULL){
                 current_ = current_->getLeft();
             }
         }
-        else if (current_->getRight() != NULL){
-            if (current_->getRight()->getKey() < current_->getParent()->getKey() || current_->getKey() > current_->getParent()->getKey()){
-                current_ = current_->getRight();
-                while (current_->getLeft() != NULL){
-                    current_ = current_->getLeft();
-                }
-            }
-        }
-        else {
+        else if (current_->getParent() != NULL){
             Node<Key,Value>* temp = current_;
             current_ = current_->getParent();
-            while (temp->getKey() > current_->getKey()){
+            while (current_ && temp->getKey() > current_->getKey()){
                 current_ = current_->getParent();
             }
         }
@@ -500,15 +493,12 @@ void BinarySearchTree<Key, Value>::insertHelper(Node<Key,Value>* current, const 
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
-    root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
     if (root_ == NULL){
         root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
     }
-    /*
     else {
         insertHelper(root_, keyValuePair);
     }
-    */
 }
 
 /**
@@ -617,12 +607,12 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key,Value>* curr)
             else {
                 parent->setRight(NULL);
             }
+            clearHelper(parent);
         }
         delete temp;
     }
-    clearHelper(left);
-    clearHelper(right);
-    clearHelper(parent);
+    if (left) {clearHelper(left);}
+    if (right) {clearHelper(right);}
 }
 
 /**
