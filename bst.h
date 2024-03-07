@@ -470,7 +470,8 @@ Value const & BinarySearchTree<Key, Value>::operator[](const Key& key) const
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insertHelper(Node<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair)
 { 
-    if (current->getKey() == keyValuePair.first){
+    if (!current) {return;}
+    else if (current->getKey() == keyValuePair.first){
         current->setValue(keyValuePair.second);
     }
     else if (current->getLeft() == NULL && current->getRight() == NULL){
