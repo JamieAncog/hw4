@@ -341,7 +341,28 @@ typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
-    ++current_;
+    if (current_ != NULL){
+        if (current_->getParent() == NULL){
+            while (current_->getLeft() != NULL){
+                current_ = current_->getLeft();
+            }
+        }
+        else if (current_->getRight() != NULL){
+            if (current_->getRight()->getKey() < current_->getParent()->getKey() || current_->getKey() > current_->getParent()->getKey()){
+                current_ = current_->getRight();
+                while (current_->getLeft() != NULL){
+                    current_ = current_->getLeft();
+                }
+            }
+        }
+        else {
+            Node<Key,Value>* temp = current_;
+            current_ = current_->getParent();
+            while (temp->getKey() > current_->getKey()){
+                current_ = current_->getParent();
+            }
+        }
+    }
     return *this;
 }
 
