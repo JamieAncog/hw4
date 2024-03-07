@@ -252,8 +252,8 @@ protected:
     void removeHelper(Node<Key,Value>* toRem);
     void insertHelper(Node<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
     Node<Key, Value>* findHelper(Node<Key,Value>* current, const Key& k) const;
-    bool isBalancedHelper(Node<Key, Value> *root);
-    int getHeight(Node<Key,Value>* curr);
+    bool isBalancedHelper(Node<Key, Value> *root) const;
+    int getHeight(Node<Key,Value>* curr) const;
     void clearHelper(Node<Key,Value>* curr);
 
 protected:
@@ -737,7 +737,7 @@ Node<Key, Value>* BinarySearchTree<Key, Value>::internalFind(const Key& key) con
  */
 
 template<typename Key, typename Value>
-int BinarySearchTree<Key, Value>::getHeight(Node<Key,Value>* curr){
+int BinarySearchTree<Key, Value>::getHeight(Node<Key,Value>* curr) const{
 	if (curr == NULL){
 		return 0;
 	}
@@ -747,7 +747,7 @@ int BinarySearchTree<Key, Value>::getHeight(Node<Key,Value>* curr){
 }
 
 template<typename Key, typename Value>
-bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value> *root) {
+bool BinarySearchTree<Key, Value>::isBalancedHelper(Node<Key, Value> *root) const{
 	bool temp = true;
 	if (root == NULL){
 		return true;
@@ -768,7 +768,8 @@ template<typename Key, typename Value>
 bool BinarySearchTree<Key, Value>::isBalanced() const
 {
     // TODO
-    return isBalancedHelper(root_);
+    Node<Key,Value>* temp = root_;
+    return isBalancedHelper(temp);
 }
 
 template<typename Key, typename Value>
