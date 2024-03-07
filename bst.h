@@ -316,7 +316,7 @@ BinarySearchTree<Key, Value>::iterator::operator==(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
-    return (current_->getItem() == rhs.current_->getItem());
+    return (this->current_ == rhs.current_);
 }
 
 /**
@@ -329,7 +329,7 @@ BinarySearchTree<Key, Value>::iterator::operator!=(
     const BinarySearchTree<Key, Value>::iterator& rhs) const
 {
     // TODO
-    return (current_->getItem() != rhs.current_->getItem());
+    return (this->current_ != rhs.current_);
 }
 
 
@@ -591,7 +591,6 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key,Value>* curr)
     Node<Key,Value>* right = curr->getRight();
     Node<Key,Value>* parent = curr->getParent();
     if (!left && !right){
-        cout << "hi" << endl;
         Node<Key,Value>* temp = curr;
         if (parent){
             if (curr->getKey() < parent->getKey()){
