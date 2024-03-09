@@ -470,24 +470,29 @@ Value const & BinarySearchTree<Key, Value>::operator[](const Key& key) const
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insertHelper(Node<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair)
 { 
-    if (!current) {return;}
-    else if (current->getKey() == keyValuePair.first){
+    if (current->getKey() == keyValuePair.first){
+        //overwrite value
         current->setValue(keyValuePair.second);
     }
-    else if (current->getLeft() == NULL && current->getRight() == NULL){
-        Node<Key, Value>* next = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, current);
-        if (keyValuePair.first < current->getKey()){
-            current->setLeft(next);
+    else if (keyValuePair.first < current->getKey()){
+        if (current->getLeft() == NULL){
+            //set new node to left
+            Node<Key,Value>* temp = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setLeft(temp);
         }
         else {
-            current->setRight(next);
+            insertHelper(current->getLeft(), keyValuePair);
         }
     }
-    else if (keyValuePair.first < current->getKey()){
-        insertHelper(current->getLeft(), keyValuePair);
-    }
     else {
-        insertHelper(current->getRight(), keyValuePair);
+        if (current->getRight() == NULL){
+            //set new node to right
+            Node<Key,Value>* temp = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setRight(temp);
+        }
+        else {
+            insertHelper(current->getRight(), keyValuePair);
+        }
     }
 }
 
