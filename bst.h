@@ -554,7 +554,6 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         //Check if both children
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
-            cout << toRem->getKey() << " " << pred->getKey() << endl;
             swapNodes(toRem,pred,parent);
             if (parent){
                 removeHelper(toRem);
