@@ -540,8 +540,15 @@ void BinarySearchTree<Key, Value>::swapNodes(Node<Key,Value>*& temp, Node<Key,Va
     Node<Key,Value>* tempRight = temp->getRight();
     temp->setLeft(pred->getLeft());
     temp->setRight(pred->getRight());
-    pred->setLeft(tempLeft);
-    pred->setRight(tempRight);
+    if (tempLeft != pred){
+        pred->setLeft(tempLeft);
+    }
+    if (tempRight != pred){
+        pred->setRight(tempRight);
+    }
+    if (!(temp->getParent() && temp->getLeft() && temp->getRight())){
+        delete temp;
+    }
 }
 
 template<typename Key, typename Value>
@@ -559,7 +566,7 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
                 removeHelper(toRem);
             }
             else {
-                delete toRem;
+                root_ = pred;
             }
         }
         //Check if one child
