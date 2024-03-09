@@ -548,6 +548,7 @@ void BinarySearchTree<Key, Value>::swapNodes(Node<Key,Value>*& temp, Node<Key,Va
     temp->setRight(pred->getRight());
     if (tempLeft && tempLeft != pred){
         pred->setLeft(tempLeft);
+        tempLeft->setParent(pred);
     }
     if (tempRight && tempRight != pred){
         pred->setRight(tempRight);
