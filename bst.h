@@ -553,6 +553,9 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             if (parent){
                 removeHelper(toRem);
             }
+            else {
+                delete toRem;
+            }
         }
         //Check if one child
         else if (toRem->getLeft() == NULL || toRem->getRight() == NULL){
