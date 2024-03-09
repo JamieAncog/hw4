@@ -355,12 +355,18 @@ BinarySearchTree<Key, Value>::iterator::operator++()
             return *this;
         }
         else if (current_->getParent() != NULL){
-            Node<Key,Value>* temp = current_;
-            current_ = current_->getParent();
-            while (current_ && temp->getKey() > current_->getKey()){
-                current_ = current_->getParent();
+            if (current_->getKey() > current_->getParent()->getKey()){
+                current_ = NULL;
+                return *this;
             }
-            return *this;
+            else {
+                Node<Key,Value>* temp = current_;
+                current_ = current_->getParent();
+                while (current_->getParent() != NULL && temp->getKey() > current_->getParent()->getKey()){
+                    current_ = current_->getParent();
+                }
+                return *this;
+            }
         }
         else {
             current_ = NULL;
@@ -540,11 +546,10 @@ void BinarySearchTree<Key, Value>::swapNodes(Node<Key,Value>*& temp, Node<Key,Va
     Node<Key,Value>* tempRight = temp->getRight();
     temp->setLeft(pred->getLeft());
     temp->setRight(pred->getRight());
-    if (tempLeft != pred){
+    if (tempLeft && tempLeft != pred){
         pred->setLeft(tempLeft);
-        tempLeft->setParent(pred);
     }
-    if (tempRight != pred){
+    if (tempRight && tempRight != pred){
         pred->setRight(tempRight);
         tempRight->setParent(pred);
     }
