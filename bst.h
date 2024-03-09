@@ -642,25 +642,20 @@ void BinarySearchTree<Key, Value>::clearHelper(Node<Key,Value>* curr)
     if (curr == NULL){
         return;
     }
-
-    Node<Key,Value>* left = curr->getLeft();
-    Node<Key,Value>* right = curr->getRight();
-    Node<Key,Value>* parent = curr->getParent();
-    if (!left && !right){
-        Node<Key,Value>* temp = curr;
-        if (parent){
-            if (curr->getKey() < parent->getKey()){
-                parent->setLeft(NULL);
-            }
-            else {
-                parent->setRight(NULL);
-            }
-            clearHelper(parent);
-        }
-        delete temp;
+    Node<Key,Value>* left_ = curr->getLeft();
+    Node<Key,Value>* right_ = curr->getRight();
+    delete curr;
+    if (left_){
+        left_->setParent(NULL);
+        clearHelper(left_);
     }
-    if (left) {clearHelper(left);}
-    if (right) {clearHelper(right);}
+    if (right_){
+        right_->setParent(NULL);
+        clearHelper(right_);
+    }
+    else {
+        return;
+    }
 }
 
 /**
@@ -671,8 +666,9 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::clear()
 {
     // TODO
-    clearHelper(root_);
+    Node<Key,Value>* temp = root_;
     root_ = NULL;
+    clearHelper(temp);
 }
 
 
