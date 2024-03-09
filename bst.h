@@ -342,6 +342,9 @@ typename BinarySearchTree<Key, Value>::iterator&
 BinarySearchTree<Key, Value>::iterator::operator++()
 {
     // TODO
+    if (current_ == NULL){
+        return *this;
+    }
     if (!(current_->getParent() == NULL && current_->getRight() == NULL)){
         if (current_->getRight() != NULL){
             current_ = current_->getRight();
