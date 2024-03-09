@@ -346,12 +346,13 @@ BinarySearchTree<Key, Value>::iterator::operator++()
     if (current_ == NULL){
         return *this;
     }
-    if (!(current_->getParent() == NULL && current_->getRight() == NULL)){
+    else {
         if (current_->getRight() != NULL){
             current_ = current_->getRight();
             while (current_->getLeft() != NULL){
                 current_ = current_->getLeft();
             }
+            return *this;
         }
         else if (current_->getParent() != NULL){
             Node<Key,Value>* temp = current_;
@@ -359,9 +360,13 @@ BinarySearchTree<Key, Value>::iterator::operator++()
             while (current_ && temp->getKey() > current_->getKey()){
                 current_ = current_->getParent();
             }
+            return *this;
+        }
+        else {
+            current_ = NULL;
+            return *this;
         }
     }
-    return *this;
 }
 
 
@@ -549,6 +554,7 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         //Check if both children
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
+            cout << toRem->getKey() << " " << pred->getKey() << endl;
             swapNodes(toRem,pred,parent);
             if (parent){
                 removeHelper(toRem);
@@ -576,13 +582,17 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         }
         //Check if two children
         else {
-            if (isLeft){
+            if (!parent){
+                delete toRem;
+            }
+            else if (isLeft){
                 parent->setLeft(NULL);
+                delete toRem;
             }
             else {
                 parent->setRight(NULL);
+                delete toRem;
             }
-            delete toRem;
         }       
 }
 
