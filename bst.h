@@ -539,7 +539,7 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
             nodeSwap(toRem, pred);
-            if (toRem->getKey() < toRem->getParent()->getKey()){
+            if (toRem->getParent()->getLeft() == toRem){
                 toRem->getParent()->setLeft(NULL);
             }
             else {
