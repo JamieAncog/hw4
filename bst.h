@@ -255,7 +255,6 @@ protected:
     bool isBalancedHelper(Node<Key, Value> *root) const;
     int getHeight(Node<Key,Value>* curr) const;
     void clearHelper(Node<Key,Value>* curr);
-    void swapNodes(Node<Key,Value>*& temp, Node<Key,Value>*& pred, Node<Key,Value>*& parent);
 
 protected:
     Node<Key, Value>* root_;
@@ -530,36 +529,6 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
 */
 
 template<typename Key, typename Value>
-void BinarySearchTree<Key, Value>::swapNodes(Node<Key,Value>*& temp, Node<Key,Value>*& pred, Node<Key,Value>*& parent){
-    if (parent){
-        if (temp->getKey() < parent->getKey()){
-            parent->setLeft(temp);
-        }
-        else {
-            parent->setRight(temp);
-        }
-        Node<Key,Value>* parent = temp->getParent();
-        temp->setParent(pred->getParent());
-        pred->setParent(parent);
-    }
-    Node<Key,Value>* tempLeft = temp->getLeft();
-    Node<Key,Value>* tempRight = temp->getRight();
-    temp->setLeft(pred->getLeft());
-    temp->setRight(pred->getRight());
-    if (tempLeft && tempLeft != pred){
-        pred->setLeft(tempLeft);
-        tempLeft->setParent(pred);
-    }
-    if (tempRight && tempRight != pred){
-        pred->setRight(tempRight);
-        tempRight->setParent(pred);
-    }
-    if (!(temp->getParent() && temp->getLeft() && temp->getRight())){
-        delete temp;
-    }
-}
-
-template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         Node<Key, Value>* parent = toRem->getParent();
         bool isLeft = false;
@@ -569,13 +538,15 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         //Check if both children
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
-            swapNodes(toRem,pred,parent);
-            if (parent){
-                removeHelper(toRem);
+            nodeSwap(toRem, pred);
+            if (toRem->getKey() < toRem->getParent()->getKey()){
+                toRem->getParent()->setLeft(NULL);
             }
             else {
-                root_ = pred;
+                toRem->getParent()->setRight(NULL);
             }
+            delete toRem;
+            if (pred->getParent() == NULL) { root_ = pred; }
         }
         //Check if one child
         else if (toRem->getLeft() == NULL || toRem->getRight() == NULL){
