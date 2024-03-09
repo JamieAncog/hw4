@@ -241,7 +241,7 @@ protected:
     Node<Key, Value>* internalFind(const Key& k) const; // TODO
     Node<Key, Value> *getSmallestNode() const;  // TODO
     static Node<Key, Value>* predecessor(Node<Key, Value>* current); // TODO
-    // Note:  static means these functions don't have a "this" pointer
+    // Note:  static means these functions don'(toRem->getLeft() == NULL && toRem->getRight() == NULL have a "this" pointer
     //        and instead just use the input argument.
 
     // Provided helper functions
@@ -255,6 +255,7 @@ protected:
     bool isBalancedHelper(Node<Key, Value> *root) const;
     int getHeight(Node<Key,Value>* curr) const;
     void clearHelper(Node<Key,Value>* curr);
+    void swapNodes(Node<Key,Value>*& temp, Node<Key,Value>*& pred, Node<Key,Value>*& parent);
 
 protected:
     Node<Key, Value>* root_;
@@ -516,6 +517,28 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
 * Recall: The writeup specifies that if a node has 2 children you
 * should swap with the predecessor and then remove.
 */
+
+template<typename Key, typename Value>
+void BinarySearchTree<Key, Value>::swapNodes(Node<Key,Value>*& temp, Node<Key,Value>*& pred, Node<Key,Value>*& parent){
+    if (parent){
+        if (temp->getKey() < parent->getKey()){
+            parent->setLeft(temp);
+        }
+        else {
+            parent->setRight(temp);
+        }
+        Node<Key,Value>* parent = temp->getParent();
+        temp->setParent(pred->getParent());
+        pred->setParent(parent);
+    }
+    Node<Key,Value>* tempLeft = temp->getLeft();
+    Node<Key,Value>* tempRight = temp->getRight();
+    temp->setLeft(pred->getLeft());
+    temp->setRight(pred->getRight());
+    pred->setLeft(tempLeft);
+    pred->setRight(tempRight);
+}
+
 template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         Node<Key, Value>* parent = toRem->getParent();
@@ -523,15 +546,13 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         if (parent && toRem->getKey() < parent->getKey()){
             isLeft = true;
         }
-        //Check if leaf node
-        if (toRem->getLeft() == NULL && toRem->getRight() == NULL){
-            if (parent && isLeft){
-                parent->setLeft(NULL);
+        //Check if both children
+        if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
+            Node<Key,Value>* pred = predecessor(toRem);
+            swapNodes(toRem,pred,parent);
+            if (parent){
+                removeHelper(toRem);
             }
-            else if (parent) {
-                parent->setRight(NULL);
-            }
-            delete toRem;
         }
         //Check if one child
         else if (toRem->getLeft() == NULL || toRem->getRight() == NULL){
@@ -541,10 +562,10 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
                 child = toRem->getRight();
             }
             //Promote temp child
-            if (parent && isLeft){
+            if (isLeft){
                 parent->setLeft(child);
             }
-            else if (parent){
+            else {
                 parent->setRight(child);
             }
             //Delete temp
@@ -552,28 +573,13 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         }
         //Check if two children
         else {
-            //Swap temp with its predecessor
-            Node<Key,Value>* pred = predecessor(toRem);
-            //Set temp's parent's child to pred
-            if (parent && isLeft){
-                parent->setLeft(pred);
+            if (isLeft){
+                parent->setLeft(NULL);
             }
-            else if (parent){
-                parent->setRight(pred);
+            else {
+                parent->setRight(NULL);
             }
-            //Set temp's parent to pred's parent
-            //Set pred's parent to temp's parent
-            toRem->setParent(pred->getParent());
-            pred->setParent(parent);
-            //Set temp's children to pred's children
-            //Set pred's children to temp's children
-            Node<Key,Value>* tempLeft = toRem->getLeft();
-            Node<Key,Value>* tempRight = toRem->getRight();
-            toRem->setLeft(pred->getLeft());
-            toRem->setRight(pred->getRight());
-            pred->setLeft(tempLeft);
-            pred->setRight(tempRight);
-            removeHelper(toRem);
+            delete toRem;
         }       
 }
 
