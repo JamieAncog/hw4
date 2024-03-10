@@ -598,7 +598,7 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             //If node has a parent and is a left child...
             //Set parent's left child to NULL
             //Delete node
-            else if (toRem = toRem->getParent()->getLeft()){
+            else if (toRem == toRem->getParent()->getLeft()){
                 toRem->getParent()->setLeft(NULL);
                 delete toRem;
             }
