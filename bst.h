@@ -598,12 +598,14 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
         else if (root_->getLeft() == NULL){
             Node<Key,Value>* temp = root_;
             root_ = root_->getRight();
+            root_->setParent(NULL);
             delete temp;
         }
         //Check if one child (left)
         else if (root_->getRight() == NULL){
             Node<Key,Value>* temp = root_;
             root_ = root_->getLeft();
+            root_->setParent(NULL);
             delete temp;
         }
         //Check if two children
