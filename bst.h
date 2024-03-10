@@ -349,7 +349,7 @@ BinarySearchTree<Key, Value>::iterator::operator++()
     else {
         //DELETE THIS
         if (current_->getKey() == 22){
-            cout << "data: "
+            cout << "data: " << endl;
             cout << current_->getParent()->getKey() << endl;
             cout << current_->getLeft()->getKey() << endl;
             cout << current_->getRight()->getKey() << endl;
