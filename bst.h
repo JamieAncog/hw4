@@ -515,6 +515,7 @@ void BinarySearchTree<Key, Value>::insertHelper(Node<Key,Value>* current, const 
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
+    cout << "Inserting " << keyValuePair.first << endl;
     if (root_ == NULL){
         root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
     }
@@ -616,6 +617,7 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
+    cout << "Removing " << key << endl;
     Node<Key, Value>* temp = internalFind(key);
     if (temp == NULL){
         return;
