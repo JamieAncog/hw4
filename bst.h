@@ -515,7 +515,6 @@ void BinarySearchTree<Key, Value>::insertHelper(Node<Key,Value>* current, const 
 template<class Key, class Value>
 void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &keyValuePair)
 {
-    cout << "Inserting " << keyValuePair.first << endl;
     if (root_ == NULL){
         root_ = new Node<Key,Value>(keyValuePair.first, keyValuePair.second, NULL);
     }
@@ -536,12 +535,18 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
             nodeSwap(toRem, pred);
+            if (toRem->getLeft()){
+                Node<Key,Value>* left_ = toRem->getLeft();
+                toRem->getParent()->setRight(left_);
+                left_->setParent(toRem->getParent());
+            }
             if (toRem->getParent()->getLeft() == toRem){
                 toRem->getParent()->setLeft(NULL);
             }
-            else {
+            else if (toRem->getParent()->getRight() == toRem){
                 toRem->getParent()->setRight(NULL);
             }
+            
             delete toRem;
             if (pred->getParent() == NULL) { root_ = pred; }
         }
@@ -617,12 +622,32 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
-    cout << "Removing " << key << endl;
+    cout << key << endl;
     Node<Key, Value>* temp = internalFind(key);
     if (temp == NULL){
+        cout << "not found" << endl << endl;
         return;
     }
     else {
+        if (temp->getParent()){
+            cout << "parent: " << temp->getParent()->getKey() << endl;
+        }
+        else {
+            cout << "no parent" << endl;
+        }
+        if (temp->getLeft()){
+            cout << "left: " << temp->getLeft()->getKey() << endl;
+        }
+        else {
+            cout << "no left" << endl;
+        }
+        if (temp->getRight()){
+            cout << "right: " << temp->getRight()->getKey() << endl;
+        }
+        else {
+            cout << "no right" << endl;
+        }
+        cout << endl;
         removeHelper(temp);
     }
 }
