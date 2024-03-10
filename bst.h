@@ -536,9 +536,15 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             Node<Key,Value>* pred = predecessor(toRem);
             nodeSwap(toRem, pred);
             if (toRem->getLeft()){
-                Node<Key,Value>* left_ = toRem->getLeft();
-                toRem->getParent()->setRight(left_);
-                left_->setParent(toRem->getParent());
+                Node<Key,Value>* child_ = toRem->getLeft();
+                Node<Key,Value>* parent_ = toRem->getParent();
+                if (child_->getKey() < parent_->getKey()){
+                    parent_->setLeft(child_);
+                }
+                else {
+                    parent_->setRight(child_);
+                }
+                child_->setParent(parent_);
             }
             if (toRem->getParent()->getLeft() == toRem){
                 toRem->getParent()->setLeft(NULL);
