@@ -622,32 +622,11 @@ template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::remove(const Key& key)
 {
     // TODO
-    cout << key << endl;
     Node<Key, Value>* temp = internalFind(key);
     if (temp == NULL){
-        cout << "not found" << endl << endl;
         return;
     }
     else {
-        if (temp->getParent()){
-            cout << "parent: " << temp->getParent()->getKey() << endl;
-        }
-        else {
-            cout << "no parent" << endl;
-        }
-        if (temp->getLeft()){
-            cout << "left: " << temp->getLeft()->getKey() << endl;
-        }
-        else {
-            cout << "no left" << endl;
-        }
-        if (temp->getRight()){
-            cout << "right: " << temp->getRight()->getKey() << endl;
-        }
-        else {
-            cout << "no right" << endl;
-        }
-        cout << endl;
         removeHelper(temp);
     }
 }
