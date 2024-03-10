@@ -537,9 +537,8 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             isLeft = true;
         }
         //Check if both children
-        cout << "no printing" << endl;
+        printRoot(root_);
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
-            cout << "two children" << endl;
             Node<Key,Value>* pred = predecessor(toRem);
             nodeSwap(toRem, pred);
             if (toRem->getParent()->getLeft() == toRem){
@@ -550,11 +549,11 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             }
             delete toRem;
             if (pred->getParent() == NULL) { root_ = pred; }
+            printRoot(root_);
         }
         //Check if one child
         else if (toRem->getLeft() != NULL || toRem->getRight() != NULL){
             //Find child
-            cout << "one child" << endl;
             Node<Key, Value>* child = toRem->getLeft();
             if (child == NULL){
                 child = toRem->getRight();
@@ -571,10 +570,10 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             }
             //Delete temp
             delete toRem;
+            printRoot(root_);
         }
         //Check if no children
         else {
-            cout << "no children" << endl;
             if (!parent){
                 delete toRem;
             }
@@ -586,6 +585,7 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
                 parent->setRight(NULL);
                 delete toRem;
             }
+            printRoot(root_);
         }       
 }
 
