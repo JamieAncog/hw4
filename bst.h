@@ -556,11 +556,11 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
                 child = toRem->getRight();
             }
             //Promote temp child
-            if (isLeft){
+            if (parent && isLeft){
                 parent->setLeft(child);
                 child->setParent(parent);
             }
-            else {
+            else if (parent) {
                 parent->setRight(child);
                 child->setParent(parent);
             }
