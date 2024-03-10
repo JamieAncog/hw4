@@ -549,19 +549,43 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             delete toRem;
             if (pred->getParent() == NULL) { root_ = pred; }
         }
-        //Check if one child
-        else if (toRem->getLeft() != NULL || toRem->getRight() != NULL){
-            //Find child
-            Node<Key, Value>* child = toRem->getLeft();
-            if (child == NULL){
-                child = toRem->getRight();
-            }
+        //Check if left child
+        else if (toRem->getLeft() != NULL){
+            Node<Key,Value>* child = toRem->getLeft();
             //Promote temp child
-            nodeSwap(toRem,child);
+            nodeSwap(toRem, child);
+            //Update root if needed
+            if (child->getParent() == NULL){
+                root_ = child;
+            }
+            //Set child's left child to temp's left child
             child->setLeft(toRem->getLeft());
             if (child->getLeft()){
                 child->getLeft()->setParent(child);
             }
+            //Set child's right child to temp's right child
+            child->setRight(toRem->getRight());
+            if (child->getRight()){
+                child->getRight()->setParent(child);
+            }
+            //Delete temp
+            delete toRem;
+        }
+        //Check if right child
+        else if (toRem->getRight() != NULL){
+            Node<Key,Value>* child = toRem->getRight();
+            //Promote temp child
+            nodeSwap(toRem, child);
+            //Update root if needed
+            if (child->getParent() == NULL){
+                root_ = child;
+            }
+            //Set child's left child to temp's left child
+            child->setLeft(toRem->getLeft());
+            if (child->getLeft()){
+                child->getLeft()->setParent(child);
+            }
+            //Set child's right child to temp's right child
             child->setRight(toRem->getRight());
             if (child->getRight()){
                 child->getRight()->setParent(child);
@@ -572,6 +596,9 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
         //Check if no children
         else {
             if (!parent){
+                if (toRem == root_){
+                    root_ = NULL;
+                }
                 delete toRem;
             }
             else if (isLeft){
@@ -592,32 +619,6 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     Node<Key, Value>* temp = internalFind(key);
     if (temp == NULL){
         return;
-    }
-    else if (temp == root_){
-        //Check if root is leaf
-        if (root_->getLeft() == NULL && root_->getRight() == NULL){
-            Node<Key,Value>* temp = root_;
-            delete temp;
-            root_ = NULL;
-        }
-        //Check if one child (right)
-        else if (root_->getLeft() == NULL){
-            Node<Key,Value>* temp = root_;
-            root_ = root_->getRight();
-            root_->setParent(NULL);
-            delete temp;
-        }
-        //Check if one child (left)
-        else if (root_->getRight() == NULL){
-            Node<Key,Value>* temp = root_;
-            root_ = root_->getLeft();
-            root_->setParent(NULL);
-            delete temp;
-        }
-        //Check if two children
-        else {
-            removeHelper(temp);
-        }      
     }
     else {
         removeHelper(temp);
