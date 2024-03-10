@@ -255,6 +255,7 @@ protected:
     bool isBalancedHelper(Node<Key, Value> *root) const;
     int getHeight(Node<Key,Value>* curr) const;
     void clearHelper(Node<Key,Value>* curr);
+    static bool isRightChild(Node<Key,Value>* curr);
 
 protected:
     Node<Key, Value>* root_;
@@ -618,7 +619,19 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     }
 }
 
-
+template<class Key, class Value>
+bool BinarySearchTree<Key, Value>::isRightChild(Node<Key,Value>* curr){
+    Node<Key,Value>* parent = curr->getParent();
+    if (!parent){
+        return false;
+    }
+    else if (curr == parent->getRight()){
+        return true;
+    }
+    else {
+        return false;
+    }
+}
 
 template<class Key, class Value>
 Node<Key, Value>*
@@ -630,6 +643,13 @@ BinarySearchTree<Key, Value>::predecessor(Node<Key, Value>* current)
         return NULL;
     }
     else if (current->getLeft() == NULL){
+        if (current->getParent()){
+            temp = current;
+            while (temp->getParent() && !(isRightChild(temp))){
+                temp = temp->getParent();
+            }
+            return temp;
+        }
         return NULL;
     }
     else {
