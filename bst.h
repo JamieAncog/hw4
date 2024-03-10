@@ -550,7 +550,7 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             if (pred->getParent() == NULL) { root_ = pred; }
         }
         //Check if one child
-        else if (toRem->getLeft() == NULL || toRem->getRight() == NULL){
+        else if (toRem->getLeft() != NULL || toRem->getRight() != NULL){
             //Find child
             Node<Key, Value>* child = toRem->getLeft();
             if (child == NULL){
