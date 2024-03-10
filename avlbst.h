@@ -50,9 +50,8 @@ protected:
 */
 template<class Key, class Value>
 AVLNode<Key, Value>::AVLNode(const Key& key, const Value& value, AVLNode<Key, Value> *parent) :
-    Node<Key, Value>(key, value, parent), balance_(0)
+    Node<Key, Value>(key, value, parent), balance_(0), avlroot_(NULL)
 {
-
 }
 
 /**
@@ -135,10 +134,11 @@ public:
     virtual void remove(const Key& key);  // TODO
 protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
+    AVLNode<Key,Value>* insertHelper(AVLNode<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
 
     // Add helper functions here
-
-
+private:
+    AVLNode<Key,Value>* avlroot_;
 };
 
 /*
@@ -146,9 +146,48 @@ protected:
  * overwrite the current value with the updated value.
  */
 template<class Key, class Value>
-void AVLTree<Key, Value>::insert (const std::pair<const Key, Value> &new_item)
+AVLNode<Key,Value>* AVLTree<Key, Value>::insertHelper(AVLNode<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair)
+{ 
+    if (current->getKey() == keyValuePair.first){
+        //overwrite value
+        current->setValue(keyValuePair.second);
+        return NULL;
+    }
+    else if (keyValuePair.first < current->getKey()){
+        if (current->getLeft() == NULL){
+            //set new node to left
+            AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setLeft(temp);
+            return temp->getParent();
+        }
+        else {
+            insertHelper(current->getLeft(), keyValuePair);
+        }
+    }
+    else {
+        if (current->getRight() == NULL){
+            //set new node to right
+            AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setRight(temp);
+            return temp->getParent();
+        }
+        else {
+            insertHelper(current->getRight(), keyValuePair);
+        }
+    }
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
 {
     // TODO
+    if (avlroot_ == NULL){
+        avlroot_ = new AVLNode<Key,Value>(new_item.first, new_item.second, NULL);
+        BinarySearchTree<Key,Value>::root_ = avlroot_;
+    }
+    else {
+        AVLNode<Key,Value>* temp = insertHelper(avlroot_, new_item);
+    }
 }
 
 /*
