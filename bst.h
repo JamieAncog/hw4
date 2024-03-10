@@ -531,7 +531,6 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
 
 template<typename Key, typename Value>
 void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
-        Node<Key, Value>* parent = toRem->getParent();
         //Check if both children
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
