@@ -537,7 +537,6 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             isLeft = true;
         }
         //Check if both children
-        printRoot(root_);
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             Node<Key,Value>* pred = predecessor(toRem);
             nodeSwap(toRem, pred);
@@ -549,7 +548,6 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             }
             delete toRem;
             if (pred->getParent() == NULL) { root_ = pred; }
-            printRoot(root_);
         }
         //Check if one child
         else if (toRem->getLeft() != NULL || toRem->getRight() != NULL){
@@ -570,7 +568,6 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             }
             //Delete temp
             delete toRem;
-            printRoot(root_);
         }
         //Check if no children
         else {
@@ -585,7 +582,6 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
                 parent->setRight(NULL);
                 delete toRem;
             }
-            printRoot(root_);
         }       
 }
 
