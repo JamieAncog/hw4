@@ -558,13 +558,14 @@ void BinarySearchTree<Key, Value>::removeHelper(Node<Key,Value>* toRem){
             }
             //Promote temp child
             nodeSwap(toRem,child);
-            child->setParent(parent);
             child->setLeft(toRem->getLeft());
+            child->getLeft()->setParent(child);
             child->setRight(toRem->getRight());
+            child->getRight()->setParent(child);
             //Delete temp
             delete toRem;
         }
-        //Check if two children
+        //Check if no children
         else {
             if (!parent){
                 delete toRem;
