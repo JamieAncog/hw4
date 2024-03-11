@@ -340,21 +340,36 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* leftChild = origParent->getLeft();
     AVLNode<Key,Value>* temp = leftChild->getRight();
+
     leftChild->setRight(origParent);
     origParent->setParent(leftChild);
     leftChild->setParent(NULL);
+
+    //If x has a right subtree, assign y as the parent of the right subtree of x
     origParent->setLeft(temp);
     if (temp) {temp->setParent(origParent);}
-    origParent->setRight(NULL);
-    if (grand && grand->getLeft() == origParent){
-        grand->setLeft(leftChild);
+
+    //If the parent of y is NULL, make x as the root of the tree
+    if (grand == NULL){
+        BinarySearchTree<Key,Value>::root_ = leftChild;
     }
-    else if (grand){
+    //Else if y is the right child of its parent p, make x as the right child of p
+    else if (grand->getRight() == origParent){
         grand->setRight(leftChild);
     }
-    if (grand) {grand->setParent(origParent);}
-    if (BinarySearchTree<Key,Value>::root_ == origParent){
-        BinarySearchTree<Key,Value>::root_ = leftChild;
+    //Else assign x as the left child of p
+    else {
+        grand->setLeft(leftChild);
+    }
+
+    //Make x as the parent of y
+    if (origParent->getKey() < leftChild->getKey()){
+        leftChild->setLeft(origParent);
+        origParent->setParent(leftChild);
+    }
+    else {
+        leftChild->setRight(origParent);
+        origParent->setParent(leftChild);
     }
 }
 
