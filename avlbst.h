@@ -342,8 +342,8 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     //Assume p is a right child of g
     else if (p == g->getRight()){
         if (g) {g->updateBalance(1);}
-        cout << "after update" << endl;
-        checkBalance(g);
+        //cout << "after update" << endl;
+        //checkBalance(g);
         if (g->getBalance() == 0){
             return;
         }
@@ -384,9 +384,9 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
-    cout << "Rotate Left " << origParent->getKey() << endl;
+    //cout << "Rotate Left " << origParent->getKey() << endl;
     if (origParent->getRight() == NULL || origParent == NULL){ return; }
-    cout << "Successful Rotation" << endl;
+    //cout << "Successful Rotation" << endl;
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* rightChild = origParent->getRight();
     AVLNode<Key,Value>* temp = rightChild->getLeft();
@@ -411,12 +411,12 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
 
     //Make x as the parent of y
     if (origParent->getKey() < rightChild->getKey()){
-        cout << "first" << endl;
+        //cout << "first" << endl;
         rightChild->setLeft(origParent);
         origParent->setParent(rightChild);
     }
     else {
-        cout << "second" << endl;
+        //cout << "second" << endl;
         rightChild->setRight(origParent);
         origParent->setParent(rightChild);
     }
@@ -424,9 +424,9 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
-    cout << "Rotate Right " << origParent->getKey() << endl;
+    //cout << "Rotate Right " << origParent->getKey() << endl;
     if (origParent->getLeft() == NULL || origParent == NULL){ return; }
-    cout << "Successful Rotation" << endl;
+    //cout << "Successful Rotation" << endl;
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* leftChild = origParent->getLeft();
     AVLNode<Key,Value>* temp = leftChild->getRight();
