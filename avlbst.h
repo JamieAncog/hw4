@@ -136,6 +136,8 @@ protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
 
     // Add helper functions here
+    void insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair);
+    void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
 };
 
 /*
@@ -144,45 +146,74 @@ protected:
  */
 
 template<class Key, class Value>
+void AVLTree<Key, Value>::insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair)
+{ 
+    AVLNode<Key,Value>* current = static_cast<AVLNode<Key, Value>*>(curr);
+    if (current->getKey() == keyValuePair.first){
+        //overwrite value
+        current->setValue(keyValuePair.second);
+        newNode = current;
+    }
+    else if (keyValuePair.first < current->getKey()){
+        if (current->getLeft() == NULL){
+            //set new node to left
+            AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setLeft(temp);
+            newNode = current;
+        }
+        else {
+            insertHelper(current->getLeft(), newNode, keyValuePair);
+        }
+    }
+    else {
+        if (current->getRight() == NULL){
+            //set new node to right
+            AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setRight(temp);
+            current = temp;
+            newNode = current;
+        }
+        else {
+            insertHelper(current->getRight(), newNode, keyValuePair);
+        }
+    }
+}
+
+template<class Key, class Value>
 void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
 {
     // TODO
-    Node<Key,Value>* sameKey = BinarySearchTree<Key,Value>::internalFind(new_item.first);
     if (BinarySearchTree<Key,Value>::root_ == NULL){
         BinarySearchTree<Key,Value>::root_ = new AVLNode<Key,Value>(new_item.first, new_item.second, NULL);
     }
-    else if (sameKey){
-        sameKey->setValue(new_item.second);
-    }
     else {
-        bool toLeft = false;
-        Node<Key,Value>* parent = NULL;
-        Node<Key,Value>* temp = BinarySearchTree<Key,Value>::root_;
-        while (!parent && (temp->getLeft() || temp->getRight())){
-            if (new_item.first < temp->getKey()){
-                if (temp->getLeft()){
-                    temp = temp->getLeft();
-                }
-                else {
-                    parent = temp;
-                    toLeft = true;
-                }
-            }
-            else {
-                if (temp->getRight()){
-                    temp = temp->getRight();
-                }
-                else {
-                    parent = temp;
-                }
-            }
+        AVLNode<Key,Value>* newNode = NULL;
+        insertHelper(BinarySearchTree<Key,Value>::root_, newNode, new_item);
+        AVLNode<Key,Value>* nodeParent = newNode->getParent();
+        //Update temp's balance
+        //If left child...
+        if (nodeParent){
+            cout << "Parent: " << nodeParent->getKey() << endl;
         }
-        if (!parent) {parent = temp;}
-
-        AVLNode<Key,Value>* next = new AVLNode<Key,Value>(new_item.first, new_item.second, parent);
-        if (toLeft) {parent->setLeft(next);}
-        else {parent->setRight(next);}
+        else {
+            cout << "No parent" << endl;
+        }
+        
+        if (!nodeParent) {}
+        else if (nodeParent->getLeft()){
+            nodeParent->updateBalance(-1);
+        }
+        //If right child...
+        else {
+            nodeParent->updateBalance(1);
+        }
+        insertFix(nodeParent, static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key,Value>::root_));
     }
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n){
+    
 }
 
 /*
