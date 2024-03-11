@@ -139,8 +139,8 @@ protected:
     void insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair);
     void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
     void checkBalance(AVLNode<Key,Value>* child) const;
-    void rotateRight(AVLNode<Key,Value>* leftChild);
-    void rotateLeft(AVLNode<Key,Value>* rightChild);
+    void rotateRight(AVLNode<Key,Value>* origParent);
+    void rotateLeft(AVLNode<Key,Value>* origParent);
 };
 
 /*
@@ -210,10 +210,12 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         else {
             nodeParent->updateBalance(1);
         }
+        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
         insertFix(nodeParent, newNode);
+        if (nodeParent->getParent()) {checkBalance(nodeParent->getParent());}
+        else { cout << "no grandparent" << endl;}
         checkBalance(nodeParent);
         checkBalance(newNode);
-        if (nodeParent->getParent()) {checkBalance(nodeParent->getParent());}
     }
     cout << endl;
 }
@@ -237,6 +239,32 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
         //Case 3: b(g) == -2
         else if (g->getBalance() == -2){
             //identify zig-zig/zig zag, rotate
+            //Zig zig
+            if (n == p->getLeft()){
+                rotateRight(g);
+                p->setBalance(0);
+                g->setBalance(0);
+            }
+            //Zig zag
+            else if (n == p->getRight()){
+                rotateLeft(p);
+                rotateRight(g);
+                if (n->getBalance() == -1){
+                    p->setBalance(0);
+                    g->setBalance(1);
+                    n->setBalance(0);
+                }
+                else if (n->getBalance() == 0){
+                    p->setBalance(0);
+                    g->setBalance(0);
+                    n->setBalance(0);                    
+                }
+                else if (n->getBalance() == 1){
+                    p->setBalance(-1);
+                    g->setBalance(0);
+                    n->setBalance(0);                    
+                }
+            }
         }
     }
     //Assume p is a right child of g
@@ -250,35 +278,79 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
         }
         else if (g->getBalance() == 2){
             //identify zig-zig/zig zag, rotate
+            //Zig zig
+            if (n == p->getRight()){
+                rotateLeft(g);
+                p->setBalance(0);
+                g->setBalance(0);
+            }
+            //Zig zag
+            else if (n == p->getLeft()){
+                rotateRight(p);
+                rotateLeft(g);
+                if (n->getBalance() == 1){
+                    p->setBalance(0);
+                    g->setBalance(-1);
+                    n->setBalance(0);
+                }
+                else if (n->getBalance() == 0){
+                    p->setBalance(0);
+                    g->setBalance(0);
+                    n->setBalance(0);                    
+                }
+                else if (n->getBalance() == -1){
+                    p->setBalance(1);
+                    g->setBalance(0);
+                    n->setBalance(0);                    
+                }
+            }
         }
     }
 }
 
 template<class Key, class Value>
-void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* rightChild){
-    if (rightChild == NULL || rightChild->getParent() == NULL){ return; }
-    AVLNode<Key,Value>* origParent = rightChild->getParent();
+void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
+    if (origParent == NULL || origParent->getRight() == NULL){ return; }
+    AVLNode<Key,Value>* grand = origParent->getParent();
+    AVLNode<Key,Value>* rightChild = origParent->getRight();
     AVLNode<Key,Value>* temp = rightChild->getLeft();
     rightChild->setLeft(origParent);
     origParent->setParent(rightChild);
     rightChild->setParent(NULL);
     origParent->setRight(temp);
     if (temp) {temp->setParent(origParent);}
+    origParent->setLeft(grand);
+    if (grand && grand->getLeft() == origParent){
+        grand->setLeft(rightChild);
+    }
+    else if (grand){
+        grand->setRight(rightChild);
+    }
+    if (grand) {grand->setParent(origParent);} 
     if (BinarySearchTree<Key,Value>::root_ == origParent){
         BinarySearchTree<Key,Value>::root_ = rightChild;
     }
 }
 
 template<class Key, class Value>
-void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* leftChild){
-    if (leftChild == NULL || leftChild->getParent() == NULL){ return; }
-    AVLNode<Key,Value>* origParent = leftChild->getParent();
+void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
+    if (origParent->getLeft() == NULL || origParent == NULL){ return; }
+    AVLNode<Key,Value>* grand = origParent->getParent();
+    AVLNode<Key,Value>* leftChild = origParent->getLeft();
     AVLNode<Key,Value>* temp = leftChild->getRight();
     leftChild->setRight(origParent);
     origParent->setParent(leftChild);
     leftChild->setParent(NULL);
     origParent->setLeft(temp);
     if (temp) {temp->setParent(origParent);}
+    origParent->setRight(NULL);
+    if (grand && grand->getLeft() == origParent){
+        grand->setLeft(leftChild);
+    }
+    else if (grand){
+        grand->setRight(leftChild);
+    }
+    if (grand) {grand->setParent(origParent);}
     if (BinarySearchTree<Key,Value>::root_ == origParent){
         BinarySearchTree<Key,Value>::root_ = leftChild;
     }
