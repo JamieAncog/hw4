@@ -67,18 +67,35 @@ int main(int argc, char *argv[])
 {
     // Binary Search Tree tests
     AVLTree<int,int> bst2;
-    bst2.insert(std::make_pair(7,4));
+    bst2.insert(std::make_pair(17,4));
+    bst2.insert(std::make_pair(16,4));
+    bst2.insert(std::make_pair(12,4));
+    bst2.print();
+    bst2.insert(std::make_pair(10,4));
     bst2.print();
     bst2.insert(std::make_pair(9,4));
     bst2.print();
-    bst2.insert(std::make_pair(15,4));
+    bst2.insert(std::make_pair(6,4));
     bst2.print();
-    bst2.insert(std::make_pair(2,4));
-    bst2.print();
-    bst2.insert(std::make_pair(1,4));
+    bst2.insert(std::make_pair(5,4));
     bst2.print();
     bst2.insert(std::make_pair(3,4));
     bst2.print();
+    bst2.insert(std::make_pair(2,4));
+    bst2.print();
+
+    /*AVLTree<int,int> bst3;
+    bst3.insert(std::make_pair(1,4));
+    bst3.insert(std::make_pair(3,4));
+    bst3.insert(std::make_pair(9,4));
+    bst3.insert(std::make_pair(11,4));
+    bst3.insert(std::make_pair(32,4));
+    bst3.insert(std::make_pair(99,4));
+    bst3.insert(std::make_pair(105,4));
+    bst3.insert(std::make_pair(300,4));
+    bst3.insert(std::make_pair(900,4));
+    bst3.print();
+    */
 
     return 0;
 }
