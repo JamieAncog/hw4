@@ -138,6 +138,8 @@ protected:
     // Add helper functions here
     void insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair);
     void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
+    void rotateRight(AVLNode<Key,Value>* leftChild);
+    void rotateLeft(AVLNode<Key,Value>* rightChild);
 };
 
 /*
@@ -184,15 +186,32 @@ template<class Key, class Value>
 void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
 {
     // TODO
+    cout << "INSERTING " << new_item.first << endl;
     if (BinarySearchTree<Key,Value>::root_ == NULL){
-        BinarySearchTree<Key,Value>::root_ = new AVLNode<Key,Value>(new_item.first, new_item.second, NULL);
+        AVLNode<Key,Value>* avlroot_ = new AVLNode<Key,Value>(new_item.first, new_item.second, NULL);
+        avlroot_->setBalance(0);
+        BinarySearchTree<Key,Value>::root_ = avlroot_;
     }
     else {
         AVLNode<Key,Value>* newNode = NULL;
         insertHelper(BinarySearchTree<Key,Value>::root_, newNode, new_item);
+        newNode->setBalance(0);
         AVLNode<Key,Value>* nodeParent = newNode->getParent();
         //Update temp's balance
-        //If left child...        
+        //If left child... 
+        if (nodeParent->getBalance() == -1){
+            cout << "parent: " << nodeParent->getKey() << ", balance: -1" << endl;
+        }
+        else if (nodeParent->getBalance() == 0){
+            cout << "parent: " << nodeParent->getKey() << ", balance: 0" << endl;
+        }
+        else if (nodeParent->getBalance() == 2){
+            cout << "parent: " << nodeParent->getKey() << ", balance: 2" << endl;
+        }  
+        else if (nodeParent->getBalance() == -2){
+            cout << "parent: " << nodeParent->getKey() << ", balance: -2" << endl;
+        } 
+
         if (!nodeParent) {
             return;
         }
@@ -203,13 +222,77 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         else {
             nodeParent->updateBalance(1);
         }
-        insertFix(nodeParent, static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key,Value>::root_));
+        insertFix(nodeParent, newNode);
+        if (nodeParent->getBalance() == -1){
+            cout << "inserted: " << newNode->getKey() << endl;
+            cout << "parent: " << nodeParent->getKey() << ", balance: -1" << endl;
+        }
+        else if (nodeParent->getBalance() == 0){
+            cout << "inserted: " << newNode->getKey() << endl;
+            cout << "parent: " << nodeParent->getKey() << ", balance: 0" << endl;
+        }
+        else if (nodeParent->getBalance() == 1){
+            cout << "inserted: " << newNode->getKey() << endl;
+            cout << "parent: " << nodeParent->getKey() << ", balance: 1" << endl;
+        }
+        else if (nodeParent->getBalance() == 2){
+            cout << "parent: " << nodeParent->getKey() << ", balance: 2" << endl;
+        }  
+        else if (nodeParent->getBalance() == -2){
+            cout << "parent: " << nodeParent->getKey() << ", balance: -2" << endl;
+        } 
     }
+    cout << endl;
 }
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n){
-    
+    AVLNode<Key,Value>* g = p->getParent();
+    if (!p) {return;}
+    if (!g) {return;}
+    cout << "Grand: " << g->getKey() << endl;
+    //Assume p is left child of g
+    if (p == g->getLeft()){
+        //b(g) += -1
+        if (g) {g->updateBalance(-1);}
+        //Case 1: b(g) == 0, return
+        if (p->getBalance() == 0){
+            return;
+        }
+        //Case 2: b(g) == -1, insertFix(g,p)
+        else if (p->getBalance() == -1){
+            insertFix(g, p);
+        }
+        //Case 3: b(g) == -2
+        else if (p->getBalance() == -2){
+            cout << "probably wrong" << endl;
+            //identify zig-zig/zig zag, rotate
+        }
+    }
+    //Assume p is a right child of g
+    else if (p == g->getRight()){
+        if (g) {g->updateBalance(1);}
+        if (p->getBalance() == 0){
+            return;
+        }
+        else if (p->getBalance() == 1){
+            insertFix(p->getParent(), p);
+        }
+        else if (p->getBalance() == 2){
+            cout << "probably wrong" << endl;
+            //identify zig-zig/zig zag, rotate
+        }
+    }
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* leftChild){
+
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* rightChild){
+
 }
 
 /*
