@@ -227,9 +227,14 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     if (!p || !p->getParent()) {return;}
     AVLNode<Key,Value>* g = p->getParent();
     //Assume p is left child of g
+    cout << "before update" << endl;
+    checkBalance(g);
     if (p == g->getLeft()){
         //b(g) += -1
         if (g) {g->updateBalance(-1);}
+        cout << "after update" << endl;
+        checkBalance(g);
+
         //Case 1: b(g) == 0, return
         if (g->getBalance() == 0){
             return;
@@ -272,6 +277,8 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     //Assume p is a right child of g
     else if (p == g->getRight()){
         if (g) {g->updateBalance(1);}
+        cout << "after updated" << endl;
+        checkBalance(g);
         if (g->getBalance() == 0){
             return;
         }
