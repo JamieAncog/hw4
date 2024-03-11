@@ -159,6 +159,7 @@ void AVLTree<Key, Value>::insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>
             //set new node to left
             AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
             current->setLeft(temp);
+            current = temp;
             newNode = current;
         }
         else {
@@ -191,15 +192,10 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         insertHelper(BinarySearchTree<Key,Value>::root_, newNode, new_item);
         AVLNode<Key,Value>* nodeParent = newNode->getParent();
         //Update temp's balance
-        //If left child...
-        if (nodeParent){
-            cout << "Parent: " << nodeParent->getKey() << endl;
+        //If left child...        
+        if (!nodeParent) {
+            return;
         }
-        else {
-            cout << "No parent" << endl;
-        }
-        
-        if (!nodeParent) {}
         else if (nodeParent->getLeft()){
             nodeParent->updateBalance(-1);
         }
