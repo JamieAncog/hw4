@@ -138,9 +138,9 @@ protected:
     // Add helper functions here
     void insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair);
     void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
+    void checkBalance(AVLNode<Key,Value>* child) const;
     void rotateRight(AVLNode<Key,Value>* leftChild);
     void rotateLeft(AVLNode<Key,Value>* rightChild);
-    void checkBalance(AVLNode<Key,Value>* child) const;
 };
 
 /*
@@ -263,7 +263,10 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* rightChild){
     origParent->setParent(rightChild);
     rightChild->setParent(NULL);
     origParent->setRight(temp);
-    temp->setParent(origParent);
+    if (temp) {temp->setParent(origParent);}
+    if (BinarySearchTree<Key,Value>::root_ == origParent){
+        BinarySearchTree<Key,Value>::root_ = rightChild;
+    }
 }
 
 template<class Key, class Value>
@@ -275,7 +278,10 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* leftChild){
     origParent->setParent(leftChild);
     leftChild->setParent(NULL);
     origParent->setLeft(temp);
-    temp->setParent(origParent);
+    if (temp) {temp->setParent(origParent);}
+    if (BinarySearchTree<Key,Value>::root_ == origParent){
+        BinarySearchTree<Key,Value>::root_ = leftChild;
+    }
 }
 
 template<class Key, class Value>
