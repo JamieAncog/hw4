@@ -212,12 +212,61 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         else {
             nodeParent->updateBalance(1);
         }
+        cout << "BEFORE INSERT FIX: " << endl;
         //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
         insertFix(nodeParent, newNode);
+        cout << "grandparent: ";
         if (nodeParent->getParent()) {checkBalance(nodeParent->getParent());}
         else { cout << "no grandparent" << endl;}
+        cout << "parent: ";
         checkBalance(nodeParent);
+        cout << "node: ";
         checkBalance(newNode);
+        cout << "AFTER UPDATE----------" << endl;
+        if (nodeParent->getParent()) {
+            AVLNode<Key,Value>* gg = nodeParent->getParent();
+            checkBalance(gg);
+            if (gg->getParent()) {cout << "parent: " << gg->getParent()->getKey() << endl;}
+            if (gg->getLeft()){cout << "left: " << gg->getLeft()->getKey() << endl;
+                cout << "   parent: " << gg->getLeft()->getParent()->getKey() << endl;}
+            if (gg->getRight()){
+                cout << "right: " << gg->getRight()->getKey() << endl;
+                AVLNode<Key,Value>* r = gg->getRight();
+                cout << "   parent: " << r->getParent()->getKey() << endl;
+                if (r->getLeft()) {
+                    cout << "    left: " << r->getLeft()->getKey() << endl;
+                    cout << "       parent: " << r->getLeft()->getParent()->getKey() << endl; 
+                    if (r->getLeft()->getLeft()) {cout << "         left: " << r->getLeft()->getLeft()->getKey() << endl;}
+                    if (r->getLeft()->getRight()) {cout << "        right: " << r->getLeft()->getRight()->getKey() << endl;}
+                }
+                if (r->getRight()) {
+                    cout << "    right: " << r->getRight()->getKey() << endl;
+                    cout << "       parent: " << r->getRight()->getParent()->getKey() << endl;
+                    if (r->getRight()->getLeft()) {cout << "         left: " << r->getRight()->getLeft()->getKey() << endl;}
+                    if (r->getRight()->getRight()) {cout << "        right: " << r->getRight()->getRight()->getKey() << endl;}
+                }
+            }
+        }
+        checkBalance(nodeParent);
+        if (nodeParent->getParent()) {cout << "parent: " << nodeParent->getParent()->getKey() << endl;}
+        if (nodeParent->getLeft()){
+            cout << "left: " << nodeParent->getLeft()->getKey() << endl;
+            cout << "   parent: " << nodeParent->getLeft()->getParent()->getKey() << endl;
+        }
+        if (nodeParent->getRight()){
+            cout << "right: " << nodeParent->getRight()->getKey() << endl;
+            cout << "   parent: " << nodeParent->getRight()->getParent()->getKey() << endl;
+        }
+        checkBalance(newNode);
+        if (newNode->getLeft()){
+            cout << "left: " << newNode->getLeft()->getKey() << endl;
+            cout << "   parent: " << newNode->getLeft()->getParent()->getKey() << endl;
+        }
+        if (newNode->getRight()){
+            cout << "right: " << newNode->getRight()->getKey() << endl;
+            cout << "   parent: " << newNode->getRight()->getParent()->getKey() << endl;
+        }
+        cout << "parent: " << newNode->getParent()->getKey() << endl;
     }
     cout << endl;
 }
@@ -227,14 +276,22 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     if (!p || !p->getParent()) {return;}
     AVLNode<Key,Value>* g = p->getParent();
     //Assume p is left child of g
-    cout << "before update" << endl;
+    cout << "BEFORE UPDATE----------" << endl;
+    if (g->getParent()) {
+        AVLNode<Key,Value>* gg = g->getParent();
+        checkBalance(gg);
+        if (gg->getLeft()){cout << "left: " << gg->getLeft()->getKey() << endl;}
+        if (gg->getRight()){cout << "right: " << gg->getRight()->getKey() << endl;}
+    }
     checkBalance(g);
+    if (g->getLeft()){cout << "left: " << g->getLeft()->getKey() << endl;}
+    if (g->getRight()){cout << "right: " << g->getRight()->getKey() << endl;}
+    checkBalance(p);
+    if (p->getLeft()){cout << "left: " << p->getLeft()->getKey() << endl;}
+    if (p->getRight()){cout << "right: " << p->getRight()->getKey() << endl;}
     if (p == g->getLeft()){
         //b(g) += -1
         if (g) {g->updateBalance(-1);}
-        cout << "after update" << endl;
-        checkBalance(g);
-
         //Case 1: b(g) == 0, return
         if (g->getBalance() == 0){
             return;
@@ -277,7 +334,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     //Assume p is a right child of g
     else if (p == g->getRight()){
         if (g) {g->updateBalance(1);}
-        cout << "after updated" << endl;
+        cout << "after update" << endl;
         checkBalance(g);
         if (g->getBalance() == 0){
             return;
@@ -319,7 +376,9 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
+    cout << "Rotate Left " << origParent->getKey() << endl;
     if (origParent->getRight() == NULL || origParent == NULL){ return; }
+    cout << "Successful Rotation" << endl;
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* rightChild = origParent->getRight();
     AVLNode<Key,Value>* temp = rightChild->getLeft();
@@ -340,13 +399,16 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
     else {
         grand->setRight(rightChild);
     }
+    rightChild->setParent(grand);
 
     //Make x as the parent of y
     if (origParent->getKey() < rightChild->getKey()){
+        cout << "first" << endl;
         rightChild->setLeft(origParent);
         origParent->setParent(rightChild);
     }
     else {
+        cout << "second" << endl;
         rightChild->setRight(origParent);
         origParent->setParent(rightChild);
     }
@@ -354,7 +416,9 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
+    cout << "Rotate Right " << origParent->getKey() << endl;
     if (origParent->getLeft() == NULL || origParent == NULL){ return; }
+    cout << "Successful Rotation" << endl;
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* leftChild = origParent->getLeft();
     AVLNode<Key,Value>* temp = leftChild->getRight();
@@ -375,6 +439,7 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
     else {
         grand->setLeft(leftChild);
     }
+    leftChild->setParent(grand);
 
     //Make x as the parent of y
     if (origParent->getKey() < leftChild->getKey()){
