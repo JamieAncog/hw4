@@ -312,25 +312,36 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
 
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateLeft(AVLNode<Key,Value>* origParent){
-    if (origParent == NULL || origParent->getRight() == NULL){ return; }
+    if (origParent->getRight() == NULL || origParent == NULL){ return; }
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* rightChild = origParent->getRight();
     AVLNode<Key,Value>* temp = rightChild->getLeft();
-    rightChild->setLeft(origParent);
-    origParent->setParent(rightChild);
-    rightChild->setParent(NULL);
+
+    //If x has a right subtree, assign y as the parent of the right subtree of x
     origParent->setRight(temp);
     if (temp) {temp->setParent(origParent);}
-    origParent->setLeft(grand);
-    if (grand && grand->getLeft() == origParent){
+
+    //If the parent of y is NULL, make x as the root of the tree
+    if (grand == NULL){
+        BinarySearchTree<Key,Value>::root_ = rightChild;
+    }
+    //Else if y is the right child of its parent p, make x as the right child of p
+    else if (grand->getLeft() == origParent){
         grand->setLeft(rightChild);
     }
-    else if (grand){
+    //Else assign x as the left child of p
+    else {
         grand->setRight(rightChild);
     }
-    if (grand) {grand->setParent(origParent);} 
-    if (BinarySearchTree<Key,Value>::root_ == origParent){
-        BinarySearchTree<Key,Value>::root_ = rightChild;
+
+    //Make x as the parent of y
+    if (origParent->getKey() < rightChild->getKey()){
+        rightChild->setLeft(origParent);
+        origParent->setParent(rightChild);
+    }
+    else {
+        rightChild->setRight(origParent);
+        origParent->setParent(rightChild);
     }
 }
 
@@ -340,10 +351,6 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
     AVLNode<Key,Value>* grand = origParent->getParent();
     AVLNode<Key,Value>* leftChild = origParent->getLeft();
     AVLNode<Key,Value>* temp = leftChild->getRight();
-
-    leftChild->setRight(origParent);
-    origParent->setParent(leftChild);
-    leftChild->setParent(NULL);
 
     //If x has a right subtree, assign y as the parent of the right subtree of x
     origParent->setLeft(temp);
@@ -371,6 +378,8 @@ void AVLTree<Key, Value>::rotateRight(AVLNode<Key,Value>* origParent){
         leftChild->setRight(origParent);
         origParent->setParent(leftChild);
     }
+
+    
 }
 
 template<class Key, class Value>
