@@ -266,7 +266,7 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
             cout << "right: " << newNode->getRight()->getKey() << endl;
             cout << "   parent: " << newNode->getRight()->getParent()->getKey() << endl;
         }
-        cout << "parent: " << newNode->getParent()->getKey() << endl;
+        if (nodeParent) {cout << "parent: " << newNode->getParent()->getKey() << endl;}
     }
     cout << endl;
 }
