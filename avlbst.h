@@ -426,7 +426,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                     parent_->setRight(child_);
                 }  
                 child_->setParent(parent_);
-                if (parent_ && toRem = parent_->getLeft()){
+                if (parent_ && toRem == parent_->getLeft()){
                     parent_->updateBalance(1);
                 }
                 else if (parent_){
