@@ -183,6 +183,7 @@ template<class Key, class Value>
 void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
 {
     // TODO
+    cout << endl;
     cout << "INSERTING " << new_item.first << endl;
     if (BinarySearchTree<Key,Value>::root_ == NULL){
         AVLNode<Key,Value>* avlroot_ = new AVLNode<Key,Value>(new_item.first, new_item.second, NULL);
@@ -199,31 +200,26 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         if (!nodeParent) {
             return;
         }
-        else if (nodeParent->getLeft() == newNode){
-            nodeParent->updateBalance(-1);
+        else if (nodeParent->getBalance() == -1){
+            nodeParent->setBalance(0);
         }
         //If right child...
-        else {
-            nodeParent->updateBalance(1);
+        else if (nodeParent->getBalance() == 1){
+            nodeParent->setBalance(0);
+        }
+        else if (nodeParent->getBalance() == 0){
+            if (newNode == nodeParent->getLeft()){
+                nodeParent->setBalance(-1);
+            }
+            else{
+                nodeParent->setBalance(1);
+            }
+            insertFix(nodeParent, newNode);
         }
 
-
+        /*
         cout << endl;
-        cout << "BEFORE INSERT FIX: " << endl;
-        BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        insertFix(nodeParent, newNode);
-        cout << endl;
-        cout << "AFTER INSERT FIX: " << endl;
-        BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        cout << "grandparent: ";
-        if (nodeParent->getParent()) {checkBalance(nodeParent->getParent());}
-        else { cout << "no grandparent" << endl;}
-        cout << "parent: ";
-        checkBalance(nodeParent);
-        cout << "node: ";
-        checkBalance(newNode);
-        cout << endl;
-        cout << "AFTER UPDATE----------" << endl;
+        cout << "TREE BEFORE INSERT-FIX----------" << endl;
         if (nodeParent->getParent()) {
             AVLNode<Key,Value>* gg = nodeParent->getParent();
             checkBalance(gg);
@@ -270,7 +266,62 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         if (newNode->getParent()){
             cout << "parent: " << newNode->getParent()->getKey() << endl;
         }
-    }
+
+        AVLNode<Key,Value>* avlr = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
+        if (avlr->getBalance() > 1 || avlr->getBalance() < -1){
+            insertFix(nodeParent, newNode);
+        }
+        cout << endl;
+        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
+        cout << "TREE AFTER INSERT-FIX----------" << endl;
+        if (nodeParent->getParent()) {
+            AVLNode<Key,Value>* gg = nodeParent->getParent();
+            checkBalance(gg);
+            if (gg->getParent()) {cout << "parent: " << gg->getParent()->getKey() << endl;}
+            if (gg->getLeft()){cout << "left: " << gg->getLeft()->getKey() << endl;
+                cout << "   parent: " << gg->getLeft()->getParent()->getKey() << endl;}
+            if (gg->getRight()){
+                cout << "right: " << gg->getRight()->getKey() << endl;
+                AVLNode<Key,Value>* r = gg->getRight();
+                cout << "   parent: " << r->getParent()->getKey() << endl;
+                if (r->getLeft()) {
+                    cout << "    left: " << r->getLeft()->getKey() << endl;
+                    cout << "       parent: " << r->getLeft()->getParent()->getKey() << endl; 
+                    if (r->getLeft()->getLeft()) {cout << "         left: " << r->getLeft()->getLeft()->getKey() << endl;}
+                    if (r->getLeft()->getRight()) {cout << "        right: " << r->getLeft()->getRight()->getKey() << endl;}
+                }
+                if (r->getRight()) {
+                    cout << "    right: " << r->getRight()->getKey() << endl;
+                    cout << "       parent: " << r->getRight()->getParent()->getKey() << endl;
+                    if (r->getRight()->getLeft()) {cout << "         left: " << r->getRight()->getLeft()->getKey() << endl;}
+                    if (r->getRight()->getRight()) {cout << "        right: " << r->getRight()->getRight()->getKey() << endl;}
+                }
+            }
+        }
+        checkBalance(nodeParent);
+        if (nodeParent->getParent()) {cout << "parent: " << nodeParent->getParent()->getKey() << endl;}
+        if (nodeParent->getLeft()){
+            cout << "left: " << nodeParent->getLeft()->getKey() << endl;
+            cout << "   parent: " << nodeParent->getLeft()->getParent()->getKey() << endl;
+        }
+        if (nodeParent->getRight()){
+            cout << "right: " << nodeParent->getRight()->getKey() << endl;
+            cout << "   parent: " << nodeParent->getRight()->getParent()->getKey() << endl;
+        }
+        checkBalance(newNode);
+        if (newNode->getLeft()){
+            cout << "left: " << newNode->getLeft()->getKey() << endl;
+            cout << "   parent: " << newNode->getLeft()->getParent()->getKey() << endl;
+        }
+        if (newNode->getRight()){
+            cout << "right: " << newNode->getRight()->getKey() << endl;
+            cout << "   parent: " << newNode->getRight()->getParent()->getKey() << endl;
+        }
+        if (newNode->getParent()){
+            cout << "parent: " << newNode->getParent()->getKey() << endl;
+        }
+        */
+    }    
 }
 
 template<class Key, class Value>
@@ -279,19 +330,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     AVLNode<Key,Value>* g = p->getParent();
     //Assume p is left child of g
     cout << endl;
-    cout << "BEFORE UPDATE----------" << endl;
-    if (g->getParent()) {
-        AVLNode<Key,Value>* gg = g->getParent();
-        checkBalance(gg);
-        if (gg->getLeft()){cout << "left: " << gg->getLeft()->getKey() << endl;}
-        if (gg->getRight()){cout << "right: " << gg->getRight()->getKey() << endl;}
-    }
-    checkBalance(g);
-    if (g->getLeft()){cout << "left: " << g->getLeft()->getKey() << endl;}
-    if (g->getRight()){cout << "right: " << g->getRight()->getKey() << endl;}
-    checkBalance(p);
-    if (p->getLeft()){cout << "left: " << p->getLeft()->getKey() << endl;}
-    if (p->getRight()){cout << "right: " << p->getRight()->getKey() << endl;}
     if (p == g->getLeft()){
         //b(g) += -1
         if (g) {g->updateBalance(-1);}
