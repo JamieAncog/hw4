@@ -67,23 +67,14 @@ int main(int argc, char *argv[])
 {
     // Binary Search Tree tests
     AVLTree<int,int> bst2;
-    bst2.insert(std::make_pair(17,4));
-    bst2.insert(std::make_pair(16,4));
-    bst2.insert(std::make_pair(12,4));
-    cout << "AFTER INSERT-FIX" << endl;
-    bst2.print();
-    bst2.insert(std::make_pair(10,4));
-    cout << "AFTER INSERT-FIX" << endl;
-    bst2.print();
-    bst2.insert(std::make_pair(9,4));
-    cout << "AFTER INSERT-FIX" << endl;
-    bst2.print();
     bst2.insert(std::make_pair(6,4));
-    cout << "AFTER INSERT-FIX" << endl;
+    bst2.insert(std::make_pair(3,4));
+    bst2.insert(std::make_pair(1,4));
+    bst2.insert(std::make_pair(10,4));
+    bst2.insert(std::make_pair(5,4));
+    bst2.insert(std::make_pair(2,4));
+    bst2.insert(std::make_pair(4,4));
     bst2.print();
-    //bst2.insert(std::make_pair(5,4));
-    //cout << "AFTER INSERT-FIX" << endl;
-    //bst2.print();
     //bst2.insert(std::make_pair(3,4));
     //cout << "AFTER INSERT-FIX" << endl;
     //bst2.print();
