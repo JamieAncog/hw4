@@ -435,6 +435,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             }
 
             if (toRem->getRight()){
+                cout << "here" << endl;
                 AVLNode<Key,Value>* child_ = toRem->getRight();
                 AVLNode<Key,Value>* parent_ = toRem->getParent();
                 if (child_->getKey() < parent_->getKey()){
