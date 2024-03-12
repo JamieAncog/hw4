@@ -132,6 +132,7 @@ class AVLTree : public BinarySearchTree<Key, Value>
 public:
     virtual void insert (const std::pair<const Key, Value> &new_item); // TODO
     virtual void remove(const Key& key);  // TODO
+    void printBalances() const;
 protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
 
@@ -143,6 +144,7 @@ protected:
     void checkBalance(AVLNode<Key,Value>* child) const;
     void rotateRight(AVLNode<Key,Value>* origParent);
     void rotateLeft(AVLNode<Key,Value>* origParent);
+    void printHelper(AVLNode<Key,Value>* curr) const;
 };
 
 /*
@@ -398,9 +400,9 @@ void AVLTree<Key, Value>::checkBalance(AVLNode<Key,Value>* child) const{
     else if (child->getBalance() == -2){
         cout << -2 << endl;
     }
-    if (child->getLeft()) {cout << "left: " << child->getLeft()->getKey() << endl;}
-    if (child->getRight()) {cout << "right: " << child->getRight()->getKey() << endl;}
-    if (child->getParent()) {cout << "parent: " << child->getParent()->getKey() << endl;}
+    //if (child->getLeft()) {cout << "left: " << child->getLeft()->getKey() << endl;}
+    //if (child->getRight()) {cout << "right: " << child->getRight()->getKey() << endl;}
+    //if (child->getParent()) {cout << "parent: " << child->getParent()->getKey() << endl;}
 }
 
 /*
@@ -695,5 +697,26 @@ void AVLTree<Key, Value>::nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* 
     n2->setBalance(tempB);
 }
 
+template<class Key, class Value>
+void AVLTree<Key, Value>::printBalances() const{
+    AVLNode<Key,Value>* avl = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
+    cout << "ALL BALANCES: " << endl;
+    printHelper(avl);
+    cout << "-------------" << endl;
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::printHelper(AVLNode<Key,Value>* curr) const{
+    if (curr == NULL){
+        return;
+    }
+    checkBalance(curr);
+    if (curr->getLeft()){
+        printHelper(curr->getLeft());
+    }
+    if (curr->getRight()){
+        printHelper(curr->getRight());
+    }
+}
 
 #endif
