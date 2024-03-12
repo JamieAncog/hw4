@@ -223,7 +223,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     if (!p || !p->getParent()) {return;}
     AVLNode<Key,Value>* g = p->getParent();
     //Assume p is left child of g
-    cout << endl;
     if (p == g->getLeft()){
         //b(g) += -1
         if (g) {g->updateBalance(-1);}
@@ -269,8 +268,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     //Assume p is a right child of g
     else if (p == g->getRight()){
         if (g) {g->updateBalance(1);}
-        //cout << "after update" << endl;
-        //checkBalance(g);
         if (g->getBalance() == 0){
             return;
         }
@@ -401,6 +398,9 @@ void AVLTree<Key, Value>::checkBalance(AVLNode<Key,Value>* child) const{
     else if (child->getBalance() == -2){
         cout << -2 << endl;
     }
+    if (child->getLeft()) {cout << "left: " << child->getLeft()->getKey() << endl;}
+    if (child->getRight()) {cout << "right: " << child->getRight()->getKey() << endl;}
+    if (child->getParent()) {cout << "parent: " << child->getParent()->getKey() << endl;}
 }
 
 /*
@@ -512,18 +512,26 @@ void AVLTree<Key, Value>::remove(const Key& key)
         return;
     }
     else {
-        //Remove node if 
+        //Let p = parent(n)
         AVLNode<Key,Value>* p = n->getParent();
         int diff;
+        //If p is not NULL
         if (p){
+            //If n is a left child, let diff = 1
             if (n == p->getLeft()){
                 diff = 1;
             }
+            //If n is a right child, let diff = -1
             else if (n == p->getRight()){
                 diff = -1;
             }
         }
+        //Swap positions with predecessor or successor
+        //Delete n and update pointers
+        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
         removeHelper(n);
+        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
+        //Patch tree by calling removeFix(p, diff)
         removeFix(p,diff);
     }
 }
