@@ -137,7 +137,7 @@ protected:
 
     // Add helper functions here
     void insertHelper(AVLNode<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
-    bool removeHelper(AVLNode<Key,Value>* toRem);
+    void removeHelper(AVLNode<Key,Value>* toRem);
     void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
     void removeFix(AVLNode<Key,Value>* n, int diff);
     void checkBalance(AVLNode<Key,Value>* child) const;
@@ -408,10 +408,30 @@ void AVLTree<Key, Value>::checkBalance(AVLNode<Key,Value>* child) const{
  * should swap with the predecessor and then remove.
  */
 template<typename Key, typename Value>
-bool AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
+void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
         //Check if both children
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
-            return false;
+            AVLNode<Key,Value>* pred = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::predecessor(toRem));
+            nodeSwap(toRem, pred);
+            if (pred->getParent() == NULL) { BinarySearchTree<Key,Value>::root_ = pred; }
+            if (toRem->getLeft()){
+                AVLNode<Key,Value>* child_ = toRem->getLeft();
+                AVLNode<Key,Value>* parent_ = toRem->getParent();
+                if (child_->getKey() < parent_->getKey()){
+                    parent_->setLeft(child_);
+                }  
+                else {
+                    parent_->setRight(child_);
+                }  
+                child_->setParent(parent_);
+            }
+            if (toRem->getParent()->getLeft() == toRem){
+                toRem->getParent()->setLeft(NULL);
+            }
+            else if (toRem->getParent()->getRight() == toRem){
+                toRem->getParent()->setRight(NULL);
+            }
+            delete toRem;
         }
         //Check if left child
         else if (toRem->getLeft() != NULL){
@@ -479,7 +499,6 @@ bool AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                 delete toRem;
             }
         }      
-        return true;
 }
 
 template<class Key, class Value>
@@ -487,13 +506,13 @@ void AVLTree<Key, Value>::remove(const Key& key)
 {
     // TODO
     cout << "REMOVING " << key << endl;
+    //Find node n to remove by walking the tree
     AVLNode<Key, Value>* n = static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key,Value>::internalFind(key));
     if (n == NULL){
         return;
     }
     else {
-        bool removed = removeHelper(n);
-        if (removed){ return; }
+        //Remove node if 
         AVLNode<Key,Value>* p = n->getParent();
         int diff;
         if (p){
@@ -504,28 +523,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
                 diff = -1;
             }
         }
-        AVLNode<Key, Value>* toRem = n;
-        AVLNode<Key,Value>* pred = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::predecessor(toRem));
-        nodeSwap(toRem, pred);
-        if (pred->getParent() == NULL) { BinarySearchTree<Key,Value>::root_ = pred; }
-        if (toRem->getLeft()){
-            AVLNode<Key,Value>* child_ = toRem->getLeft();
-            AVLNode<Key,Value>* parent_ = toRem->getParent();
-            if (child_->getKey() < parent_->getKey()){
-                parent_->setLeft(child_);
-            }
-            else {
-                parent_->setRight(child_);
-            }
-            child_->setParent(parent_);
-        }
-        if (toRem->getParent()->getLeft() == toRem){
-            toRem->getParent()->setLeft(NULL);
-        }
-        else if (toRem->getParent()->getRight() == toRem){
-            toRem->getParent()->setRight(NULL);
-        }
-        delete toRem;
+        removeHelper(n);
         removeFix(p,diff);
     }
 }
