@@ -1,6 +1,5 @@
 #ifndef AVLBST_H
 #define AVLBST_H
-#define DEBUG
 
 #include <iostream>
 #include <exception>
@@ -137,7 +136,7 @@ protected:
     virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
 
     // Add helper functions here
-    void insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair);
+    void insertHelper(AVLNode<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
     bool removeHelper(AVLNode<Key,Value>* toRem);
     void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
     void removeFix(AVLNode<Key,Value>* n, int diff);
@@ -152,25 +151,20 @@ protected:
  */
 
 template<class Key, class Value>
-void AVLTree<Key, Value>::insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>*& newNode, const std::pair<const Key, Value>& keyValuePair)
+void AVLTree<Key, Value>::insertHelper(AVLNode<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair)
 { 
-    AVLNode<Key,Value>* current = static_cast<AVLNode<Key, Value>*>(curr);
     if (current->getKey() == keyValuePair.first){
         //overwrite value
         current->setValue(keyValuePair.second);
-        newNode = current;
     }
     else if (keyValuePair.first < current->getKey()){
         if (current->getLeft() == NULL){
-            newNode = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
             //set new node to left
-            current->setLeft(newNode);
-            cout << newNode->getKey() << endl;
-            cout << newNode->getParent()->getKey() << endl;
-            cout << newNode->getParent()->getLeft()->getKey() << endl;
+            AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
+            current->setLeft(temp);
         }
         else {
-            insertHelper(current->getLeft(), newNode, keyValuePair);
+            insertHelper(current->getLeft(), keyValuePair);
         }
     }
     else {
@@ -178,10 +172,9 @@ void AVLTree<Key, Value>::insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>
             //set new node to right
             AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
             current->setRight(temp);
-            newNode = temp;
         }
         else {
-            insertHelper(current->getRight(), newNode, keyValuePair);
+            insertHelper(current->getRight(), keyValuePair);
         }
     }
 }
@@ -197,13 +190,9 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         BinarySearchTree<Key,Value>::root_ = avlroot_;
     }
     else {
-        AVLNode<Key,Value>* newNode = NULL;
-        cout << "TESTING INSERT" << endl;
-        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        cout << "AFTER INSERT" << endl;
-        insertHelper(BinarySearchTree<Key,Value>::root_, newNode, new_item);
+        insertHelper(static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_), new_item);
+        AVLNode<Key,Value>* newNode = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::internalFind(new_item.first));
         newNode->setBalance(0);
-        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
         AVLNode<Key,Value>* nodeParent = newNode->getParent();
         //Update temp's balance
         //If left child... 
@@ -219,18 +208,13 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         }
 
 
-        #ifdef DEBUG
         cout << endl;
         cout << "BEFORE INSERT FIX: " << endl;
         BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        #endif
         insertFix(nodeParent, newNode);
-        #ifdef DEBUG
         cout << endl;
         cout << "AFTER INSERT FIX: " << endl;
         BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        #endif
-        #ifdef DEBUG
         cout << "grandparent: ";
         if (nodeParent->getParent()) {checkBalance(nodeParent->getParent());}
         else { cout << "no grandparent" << endl;}
@@ -286,7 +270,6 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         if (newNode->getParent()){
             cout << "parent: " << newNode->getParent()->getKey() << endl;
         }
-        #endif 
     }
 }
 
@@ -295,7 +278,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     if (!p || !p->getParent()) {return;}
     AVLNode<Key,Value>* g = p->getParent();
     //Assume p is left child of g
-    #ifdef DEBUG
     cout << endl;
     cout << "BEFORE UPDATE----------" << endl;
     if (g->getParent()) {
@@ -310,7 +292,6 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     checkBalance(p);
     if (p->getLeft()){cout << "left: " << p->getLeft()->getKey() << endl;}
     if (p->getRight()){cout << "right: " << p->getRight()->getKey() << endl;}
-    #endif
     if (p == g->getLeft()){
         //b(g) += -1
         if (g) {g->updateBalance(-1);}
