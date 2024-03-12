@@ -1,5 +1,6 @@
 #ifndef AVLBST_H
 #define AVLBST_H
+#define DEBUG
 
 #include <iostream>
 #include <exception>
@@ -161,11 +162,12 @@ void AVLTree<Key, Value>::insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>
     }
     else if (keyValuePair.first < current->getKey()){
         if (current->getLeft() == NULL){
+            newNode = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
             //set new node to left
-            AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
-            current->setLeft(temp);
-            current = temp;
-            newNode = current;
+            current->setLeft(newNode);
+            cout << newNode->getKey() << endl;
+            cout << newNode->getParent()->getKey() << endl;
+            cout << newNode->getParent()->getLeft()->getKey() << endl;
         }
         else {
             insertHelper(current->getLeft(), newNode, keyValuePair);
@@ -176,8 +178,7 @@ void AVLTree<Key, Value>::insertHelper(Node<Key,Value>* curr, AVLNode<Key,Value>
             //set new node to right
             AVLNode<Key,Value>* temp = new AVLNode<Key,Value>(keyValuePair.first, keyValuePair.second, current);
             current->setRight(temp);
-            current = temp;
-            newNode = current;
+            newNode = temp;
         }
         else {
             insertHelper(current->getRight(), newNode, keyValuePair);
@@ -197,8 +198,12 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
     }
     else {
         AVLNode<Key,Value>* newNode = NULL;
+        cout << "TESTING INSERT" << endl;
+        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
+        cout << "AFTER INSERT" << endl;
         insertHelper(BinarySearchTree<Key,Value>::root_, newNode, new_item);
         newNode->setBalance(0);
+        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
         AVLNode<Key,Value>* nodeParent = newNode->getParent();
         //Update temp's balance
         //If left child... 
@@ -212,12 +217,20 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         else {
             nodeParent->updateBalance(1);
         }
-        //cout << "BEFORE INSERT FIX: " << endl;
-        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        /*
-        */
+
+
+        #ifdef DEBUG
+        cout << endl;
+        cout << "BEFORE INSERT FIX: " << endl;
+        BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
+        #endif
         insertFix(nodeParent, newNode);
-        /*
+        #ifdef DEBUG
+        cout << endl;
+        cout << "AFTER INSERT FIX: " << endl;
+        BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
+        #endif
+        #ifdef DEBUG
         cout << "grandparent: ";
         if (nodeParent->getParent()) {checkBalance(nodeParent->getParent());}
         else { cout << "no grandparent" << endl;}
@@ -225,6 +238,7 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         checkBalance(nodeParent);
         cout << "node: ";
         checkBalance(newNode);
+        cout << endl;
         cout << "AFTER UPDATE----------" << endl;
         if (nodeParent->getParent()) {
             AVLNode<Key,Value>* gg = nodeParent->getParent();
@@ -272,9 +286,8 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
         if (newNode->getParent()){
             cout << "parent: " << newNode->getParent()->getKey() << endl;
         }
-        */
+        #endif 
     }
-    cout << endl;
 }
 
 template<class Key, class Value>
@@ -282,7 +295,8 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     if (!p || !p->getParent()) {return;}
     AVLNode<Key,Value>* g = p->getParent();
     //Assume p is left child of g
-    /*
+    #ifdef DEBUG
+    cout << endl;
     cout << "BEFORE UPDATE----------" << endl;
     if (g->getParent()) {
         AVLNode<Key,Value>* gg = g->getParent();
@@ -296,7 +310,7 @@ void AVLTree<Key, Value>::insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n
     checkBalance(p);
     if (p->getLeft()){cout << "left: " << p->getLeft()->getKey() << endl;}
     if (p->getRight()){cout << "right: " << p->getRight()->getKey() << endl;}
-    */
+    #endif
     if (p == g->getLeft()){
         //b(g) += -1
         if (g) {g->updateBalance(-1);}
