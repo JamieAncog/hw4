@@ -427,9 +427,11 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             }
             if (toRem->getParent()->getLeft() == toRem){
                 toRem->getParent()->setLeft(NULL);
+                toRem->getParent()->updateBalance(1);
             }
             else if (toRem->getParent()->getRight() == toRem){
                 toRem->getParent()->setRight(NULL);
+                toRem->getParent()->updateBalance(-1);
             }
             delete toRem;
         }
@@ -452,6 +454,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             if (child->getRight()){
                 child->getRight()->setParent(child);
             }
+            child->setBalance(0);
             //Delete temp
             delete toRem;
         }
@@ -474,6 +477,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             if (child->getRight()){
                 child->getRight()->setParent(child);
             }
+            child->setBalance(0);
             //Delete temp
             delete toRem;
         }
@@ -489,6 +493,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             //Delete node
             else if (toRem == toRem->getParent()->getLeft()){
                 toRem->getParent()->setLeft(NULL);
+                toRem->getParent()->updateBalance(1);
                 delete toRem;
             }
             //If node has a parent and is a right child...
@@ -496,6 +501,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             //Delete node
             else {
                 toRem->getParent()->setRight(NULL);
+                toRem->getParent()->updateBalance(-1);
                 delete toRem;
             }
         }      
@@ -507,6 +513,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
     // TODO
     cout << "REMOVING " << key << endl;
     //Find node n to remove by walking the tree
+    //Locate node to be deleted
     AVLNode<Key, Value>* n = static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key,Value>::internalFind(key));
     if (n == NULL){
         return;
@@ -528,10 +535,7 @@ void AVLTree<Key, Value>::remove(const Key& key)
         }
         //Swap positions with predecessor or successor
         //Delete n and update pointers
-        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
         removeHelper(n);
-        //BinarySearchTree<Key,Value>::printRoot(BinarySearchTree<Key,Value>::root_);
-        //Patch tree by calling removeFix(p, diff)
         removeFix(p,diff);
     }
 }
