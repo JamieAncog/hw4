@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <vector>
 #include <cstdlib>
 #include "bst.h"
 #include "avlbst.h"
@@ -51,38 +52,7 @@ using namespace std;
 
 void testRemove(int num){
     cout << "REMOVING KEY: " << num << endl;
-    BinarySearchTree<int,int> bst2;
-    bst2.insert(std::make_pair(7,4));
-    bst2.insert(std::make_pair(9,4));
-    bst2.insert(std::make_pair(15,4));
-    bst2.insert(std::make_pair(2,4));
-    bst2.insert(std::make_pair(1,4));
-    bst2.insert(std::make_pair(3,4));
-    bst2.remove(num);
-    bst2.print();
-    cout << endl;
-}
-
-int main(int argc, char *argv[])
-{
-    // Binary Search Tree tests
-    AVLTree<int,int> bst2;
-    bst2.insert(std::make_pair(6,4));
-    bst2.insert(std::make_pair(3,4));
-    bst2.insert(std::make_pair(1,4));
-    bst2.insert(std::make_pair(10,4));
-    bst2.insert(std::make_pair(5,4));
-    bst2.insert(std::make_pair(2,4));
-    bst2.insert(std::make_pair(4,4));
-    bst2.print();
-    //bst2.insert(std::make_pair(3,4));
-    //cout << "AFTER INSERT-FIX" << endl;
-    //bst2.print();
-    //bst2.insert(std::make_pair(2,4));
-    //cout << "AFTER INSERT-FIX" << endl;
-    //bst2.print();
-
-    /*AVLTree<int,int> bst3;
+    AVLTree<int,int> bst3;
     bst3.insert(std::make_pair(1,4));
     bst3.insert(std::make_pair(3,4));
     bst3.insert(std::make_pair(9,4));
@@ -92,8 +62,46 @@ int main(int argc, char *argv[])
     bst3.insert(std::make_pair(105,4));
     bst3.insert(std::make_pair(300,4));
     bst3.insert(std::make_pair(900,4));
-    bst3.print();
+    bst3.remove(num);
+    if (bst3.isBalanced()){
+        cout << "Success!!!" << endl;
+    }
+    else {
+        cout << "Not Balanced" << endl;
+    }
+    cout << endl;
+}
+
+
+int main(int argc, char *argv[])
+{
+    // AVL Tree tests
+    AVLTree<int,int> at;
+    int dat[] = {-53, -144, -22, 56, -147, 75, -128, 123, -89, -117, 50, 2, 114, 21, 147, 45, 16, 28, -64, -77,-73, 71, 105, 144, -20,41, -61, 106, -96, -142};
+    for (int i = 0; i < 30; i++){
+        at.insert(std::make_pair(dat[i],4));
+        if (at.isBalanced()){
+            cout <<"is Balanced" << endl;
+        }
+        else {
+            cout <<"is not Balanced" << endl;
+        }
+    }
+    /*
+    int rem[] = {-53, 2, 45};
+    //{-20, -96,-89,16,56};
+    for (int i = 0; i < 3; i++){
+        at.remove(rem[i]);
+        bool isB = at.isBalanced();
+        if (isB){
+            cout << rem[i] << " is Balanced" << endl;
+        }
+        else {
+            cout << rem[i] << " is not Balanced" << endl;
+        }
+    }
     */
+    
 
     return 0;
 }
