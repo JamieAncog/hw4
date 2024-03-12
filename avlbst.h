@@ -413,7 +413,9 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
         if (toRem->getLeft() != NULL && toRem->getRight() != NULL) {
             AVLNode<Key,Value>* pred = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::predecessor(toRem));
             nodeSwap(toRem, pred);
+
             if (pred->getParent() == NULL) { BinarySearchTree<Key,Value>::root_ = pred; }
+
             if (toRem->getLeft()){
                 AVLNode<Key,Value>* child_ = toRem->getLeft();
                 AVLNode<Key,Value>* parent_ = toRem->getParent();
@@ -424,7 +426,15 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                     parent_->setRight(child_);
                 }  
                 child_->setParent(parent_);
+                if (parent_ && toRem = parent_->getLeft()){
+                    parent_->updateBalance(1);
+                }
+                else if (parent_){
+                    parent_->updateBalance(-1);
+                }
+
             }
+
             if (toRem->getParent()->getLeft() == toRem){
                 toRem->getParent()->setLeft(NULL);
                 toRem->getParent()->updateBalance(1);
@@ -433,12 +443,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                 toRem->getParent()->setRight(NULL);
                 toRem->getParent()->updateBalance(-1);
             }
-            if (toRem->getLeft() == NULL && toRem->getRight() == NULL){
-                delete toRem;
-            }
-            else {
-                removeHelper(toRem);
-            }
+            delete toRem;
         }
         //Check if left child
         else if (toRem->getLeft() != NULL){
