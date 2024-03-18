@@ -127,27 +127,6 @@ protected:
     void printHelper(AVLNode<Key,Value>* curr) const;
 };
 
-template <class Key, class Value>
-class AVLTree : public BinarySearchTree<Key, Value>
-{
-public:
-    virtual void insert (const std::pair<const Key, Value> &new_item); // TODO
-    virtual void remove(const Key& key);  // TODO
-    void printBalances() const;
-protected:
-    virtual void nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2);
-
-    // Add helper functions here
-    void insertHelper(AVLNode<Key,Value>* current, const std::pair<const Key, Value>& keyValuePair);
-    void removeHelper(AVLNode<Key,Value>* toRem);
-    void insertFix(AVLNode<Key,Value>* p, AVLNode<Key,Value>* n);
-    void removeFix(AVLNode<Key,Value>* n, int diff);
-    void checkBalance(AVLNode<Key,Value>* child) const;
-    void rotateRight(AVLNode<Key,Value>* origParent);
-    void rotateLeft(AVLNode<Key,Value>* origParent);
-    void printHelper(AVLNode<Key,Value>* curr) const;
-};
-
 /*
  * Recall: If key is already in the tree, you should 
  * overwrite the current value with the updated value.
@@ -526,3 +505,185 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
             }
         }      
 }
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::remove(const Key& key)
+{
+    // TODO
+    cout << "REMOVING " << key << endl;
+    //Find node n to remove by walking the tree
+    //Locate node to be deleted
+    AVLNode<Key, Value>* n = static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key,Value>::internalFind(key));
+    if (n == NULL){
+        return;
+    }
+    else {
+        //Let p = parent(n)
+        AVLNode<Key,Value>* p = n->getParent();
+        int diff;
+        //If p is not NULL
+        if (p){
+            //If n is a left child, let diff = 1
+            if (n == p->getLeft()){
+                diff = 1;
+            }
+            //If n is a right child, let diff = -1
+            else if (n == p->getRight()){
+                diff = -1;
+            }
+        }
+        //Swap positions with predecessor or successor
+        //Delete n and update pointers
+        removeHelper(n);
+        removeFix(p,diff);
+    }
+}
+template<class Key, class Value>
+void AVLTree<Key,Value>::removeFix(AVLNode<Key,Value>* n, int diff){
+    //If n is null, return
+    if (!n) {return;}
+    //Compute next recursive call's arguments now before altering the tree
+    AVLNode<Key,Value>* p = n->getParent();
+    int ndiff;
+    if (p){
+        if (n == p->getLeft()){
+            ndiff = 1;
+        }
+        else {
+            ndiff = -1;
+        }
+    }
+    if (diff == -1){
+        //Case 1
+        if (n->getBalance() + diff == -2){
+            AVLNode<Key,Value>* c = n->getLeft();
+            //Case 1a
+            if (c->getBalance() == -1){
+                rotateRight(n);
+                n->setBalance(0);
+                c->setBalance(0);
+                removeFix(p,ndiff);
+            }
+            //Case 1b
+            else if (c->getBalance() == 0){
+                rotateRight(n);
+                n->setBalance(-1);
+                c->setBalance(1);
+            }
+            //Case 1c
+            else if (c->getBalance() == 1){
+                AVLNode<Key,Value>* g = c->getRight();
+                rotateLeft(c);
+                rotateRight(n);
+                if (g->getBalance() == 1){
+                    n->setBalance(0);
+                    c->setBalance(-1);
+                    g->setBalance(0);
+                }
+                else if (g->getBalance() == 0){
+                    n->setBalance(0);
+                    c->setBalance(0);
+                    g->setBalance(0);  
+                }
+                else if (g->getBalance() == -1){
+                    n->setBalance(1);
+                    c->setBalance(0);
+                    g->setBalance(0);                   
+                }
+                removeFix(p,ndiff);
+            }
+        }
+        //Case 2
+        else if (n->getBalance() + diff == -1){
+            n->setBalance(-1);
+        }
+        //Case 3
+        else if (n->getBalance() + diff == 0){
+            n->setBalance(0);
+            removeFix(p,ndiff);
+        }
+    }
+    else if (diff == 1){
+        //Case 1
+        if (n->getBalance() + diff == 2){
+            AVLNode<Key,Value>* c = n->getRight();
+            //Case 1a
+            if (c->getBalance() == 1){
+                rotateLeft(n);
+                n->setBalance(0);
+                c->setBalance(0);
+                removeFix(p,ndiff);
+            }
+            //Case 1b
+            else if (c->getBalance() == 0){
+                rotateLeft(n);
+                n->setBalance(1);
+                c->setBalance(-1);
+            }
+            //Case 1c
+            else if (c->getBalance() == -1){
+                AVLNode<Key,Value>* g = c->getLeft();
+                rotateRight(c);
+                rotateLeft(n);
+                if (g->getBalance() == -1){
+                    n->setBalance(0);
+                    c->setBalance(1);
+                    g->setBalance(0);
+                }
+                else if (g->getBalance() == 0){
+                    n->setBalance(0);
+                    c->setBalance(0);
+                    g->setBalance(0);  
+                }
+                else if (g->getBalance() == 1){
+                    n->setBalance(-1);
+                    c->setBalance(0);
+                    g->setBalance(0);                   
+                }
+                removeFix(p,ndiff);
+            }
+        }
+        //Case 2
+        else if (n->getBalance() + diff == 1){
+            n->setBalance(1);
+        }
+        //Case 3
+        else if (n->getBalance() + diff == 0){
+            n->setBalance(0);
+            removeFix(p,ndiff);
+        }
+    }
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::nodeSwap( AVLNode<Key,Value>* n1, AVLNode<Key,Value>* n2)
+{
+    BinarySearchTree<Key, Value>::nodeSwap(n1, n2);
+    int8_t tempB = n1->getBalance();
+    n1->setBalance(n2->getBalance());
+    n2->setBalance(tempB);
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::printBalances() const{
+    AVLNode<Key,Value>* avl = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
+    cout << "ALL BALANCES: " << endl;
+    printHelper(avl);
+    cout << "-------------" << endl;
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::printHelper(AVLNode<Key,Value>* curr) const{
+    if (curr == NULL){
+        return;
+    }
+    checkBalance(curr);
+    if (curr->getLeft()){
+        printHelper(curr->getLeft());
+    }
+    if (curr->getRight()){
+        printHelper(curr->getRight());
+    }
+}
+
+#endif
