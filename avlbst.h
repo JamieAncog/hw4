@@ -543,12 +543,33 @@ void AVLTree<Key, Value>::remove(const Key& key)
         //Delete n and update pointers
         removeHelper(n);
         removeFix(p,diff);
+        AVLNode<Key,Value>* avlr = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
+        if (BinarySearchTree<Key,Value>::getHeight(avlr->getLeft()) - BinarySearchTree<Key,Value>::getHeight(avlr->getRight()) > 1){
+                if (avlr->getRight()->getLeft()){
+                    avlr->updateBalance(1);
+                }
+                else {
+                    avlr->getRight()->updateBalance(-1);
+                }
+                rotateRight(avlr);
+        }
+        else if (BinarySearchTree<Key,Value>::getHeight(avlr->getRight()) - BinarySearchTree<Key,Value>::getHeight(avlr->getLeft()) > 1){
+                if (avlr->getLeft()->getRight()){
+                    avlr->updateBalance(-1);
+                }
+                else {
+                    avlr->getLeft()->updateBalance(1);
+                }
+                rotateLeft(avlr);
+        }
     }
 }
 template<class Key, class Value>
 void AVLTree<Key,Value>::removeFix(AVLNode<Key,Value>* n, int diff){
     //If n is null, return
-    if (!n) {return;}
+    if (!n) { 
+        return;    
+    }
     //Compute next recursive call's arguments now before altering the tree
     AVLNode<Key,Value>* p = n->getParent();
     int ndiff;
