@@ -349,8 +349,14 @@ BinarySearchTree<Key, Value>::iterator::operator++()
     else {
         if (current_->getRight() != NULL){
             current_ = current_->getRight();
+            Node<Key,Value>* temp = current_;
             while (current_->getLeft() != NULL){
-                current_ = current_->getLeft();
+                if (current_->getLeft()->getKey() > temp->getKey()){
+                    current_ = current_->getLeft();
+                }
+                else {
+                    break;
+                }
             }
             return *this;
         }
