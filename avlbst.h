@@ -543,25 +543,27 @@ void AVLTree<Key, Value>::remove(const Key& key)
         //Delete n and update pointers
         removeHelper(n);
         removeFix(p,diff);
+        
         AVLNode<Key,Value>* avlr = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
         if (avlr && BinarySearchTree<Key,Value>::getHeight(avlr->getLeft()) - BinarySearchTree<Key,Value>::getHeight(avlr->getRight()) > 1){
-                if (avlr->getRight()->getLeft()){
+                if (avlr->getRight() && avlr->getRight()->getLeft()){
                     avlr->updateBalance(1);
                 }
-                else {
+                else if (avlr->getRight()) {
                     avlr->getRight()->updateBalance(-1);
                 }
                 rotateRight(avlr);
         }
         else if (avlr && BinarySearchTree<Key,Value>::getHeight(avlr->getRight()) - BinarySearchTree<Key,Value>::getHeight(avlr->getLeft()) > 1){
-                if (avlr->getLeft()->getRight()){
+                if (avlr->getLeft() && avlr->getLeft()->getRight()){
                     avlr->updateBalance(-1);
                 }
-                else {
+                else if (avlr->getLeft()){
                     avlr->getLeft()->updateBalance(1);
                 }
                 rotateLeft(avlr);
         }
+        
     }
 }
 template<class Key, class Value>
