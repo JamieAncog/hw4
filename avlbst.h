@@ -124,6 +124,8 @@ protected:
     void rotateRight(AVLNode<Key,Value>* origParent);
     void rotateLeft(AVLNode<Key,Value>* origParent);
     void printHelper(AVLNode<Key,Value>* curr) const;
+    AVLNode<Key, Value>* findHelp(AVLNode<Key,Value>* current, const Key& key) const;
+    AVLNode<Key, Value>* findInternal(const Key& key) const;
 };
 /*
  * Recall: If key is already in the tree, you should 
@@ -157,6 +159,44 @@ void AVLTree<Key, Value>::insertHelper(AVLNode<Key,Value>* current, const std::p
         }
     }
 }
+
+template<typename Key, typename Value>
+AVLNode<Key, Value>* AVLTree<Key, Value>::findHelp(AVLNode<Key,Value>* current, const Key& key) const
+{
+    if (current == NULL){
+        return NULL;
+    }
+    if (current->getKey() == key){
+        return current;
+    }
+    else {
+        if (findHelp(current->getLeft(), key)){
+            return findHelp(current->getLeft(), key);
+        }
+        else if (findHelp(current->getRight(), key)){
+            return findHelp(current->getRight(), key);
+        }
+        else {
+            return NULL;
+        }
+        return NULL;
+    }
+}
+
+
+template<typename Key, typename Value>
+AVLNode<Key, Value>* AVLTree<Key, Value>::findInternal(const Key& key) const
+{
+    // TODO
+    AVLNode<Key,Value>* avlr = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
+    if (avlr == NULL) {
+        return NULL;
+    }
+    else {
+        return findHelp(avlr, key);
+    }
+}
+
 template<class Key, class Value>
 void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
 {
@@ -170,6 +210,11 @@ void AVLTree<Key, Value>::insert(const std::pair<const Key, Value> &new_item)
     //Case 2: Root is not NULL
     else {
         //Insert new node or overwrite existing node
+        AVLNode<Key,Value>* overwrite = findInternal(new_item.first);
+        if (overwrite) {
+            overwrite->setValue(new_item.second);
+            return;
+        }
         insertHelper(static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_), new_item);
         //Initialize pointer to the new/overwritten node
         AVLNode<Key,Value>* newNode = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::internalFind(new_item.first));
@@ -373,9 +418,9 @@ void AVLTree<Key, Value>::checkBalance(AVLNode<Key,Value>* child) const{
     else if (child->getBalance() == -2){
         cout << -2 << endl;
     }
-    //if (child->getLeft()) {cout << "left: " << child->getLeft()->getKey() << endl;}
-    //if (child->getRight()) {cout << "right: " << child->getRight()->getKey() << endl;}
-    //if (child->getParent()) {cout << "parent: " << child->getParent()->getKey() << endl;}
+    if (child->getLeft()) {cout << "left: " << child->getLeft()->getKey() << endl;}
+    if (child->getRight()) {cout << "right: " << child->getRight()->getKey() << endl;}
+    if (child->getParent()) {cout << "parent: " << child->getParent()->getKey() << endl;}
 }
 /*
  * Recall: The writeup specifies that if a node has 2 children you
@@ -402,7 +447,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                     parent_->setRight(child_);
                 }  
                 child_->setParent(parent_);
-                if (parent_ && toRem == parent_->getLeft()){
+                if (parent_ && child_ == parent_->getLeft()){
                     parent_->updateBalance(1);
                 }
                 else if (parent_){
@@ -421,7 +466,7 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                     parent_->setRight(child_);
                 }  
                 child_->setParent(parent_);
-                if (parent_ && toRem == parent_->getLeft()){
+                if (parent_ && child_ == parent_->getLeft()){
                     parent_->updateBalance(1);
                 }
                 else if (parent_){
@@ -429,13 +474,30 @@ void AVLTree<Key, Value>::removeHelper(AVLNode<Key,Value>* toRem){
                 }
             }
 
+            AVLNode<Key,Value>* avlr = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
             //If node-to-be-removed is a left child, update parent's balance and left ptr
             if (toRem->getParent()->getLeft() == toRem){
+                if (toRem->getParent()->getRight() == NULL && toRem->getParent() != avlr){
+                    if (toRem->getParent()->getKey() < avlr->getKey()){
+                        avlr->updateBalance(1);
+                    }
+                    else {
+                        avlr->updateBalance(-1);
+                    }
+                }
                 toRem->getParent()->setLeft(NULL);
                 toRem->getParent()->updateBalance(1);
             }
             //If node-to-be-removed is a right child, update parent's balance and right ptr
             else if (toRem->getParent()->getRight() == toRem){
+                if (toRem->getParent()->getLeft() == NULL && toRem->getParent() != avlr){
+                    if (toRem->getParent()->getKey() < avlr->getKey()){
+                        avlr->updateBalance(1);
+                    }
+                    else {
+                        avlr->updateBalance(-1);
+                    }
+                }
                 toRem->getParent()->setRight(NULL);
                 toRem->getParent()->updateBalance(-1);
             }
@@ -520,13 +582,14 @@ void AVLTree<Key, Value>::remove(const Key& key)
     // TODO
     //Find node n to remove by walking the tree
     //Locate node to be deleted
-    AVLNode<Key, Value>* n = static_cast<AVLNode<Key, Value>*>(BinarySearchTree<Key,Value>::internalFind(key));
+    AVLNode<Key, Value>* n = findInternal(key);
     if (n == NULL){
         return;
     }
     else {
         //Let p = parent(n)
         AVLNode<Key,Value>* p = n->getParent();
+        bool isRoot = false;
         int diff;
         //If p is not NULL
         if (p){
@@ -539,31 +602,22 @@ void AVLTree<Key, Value>::remove(const Key& key)
                 diff = -1;
             }
         }
+        else {
+            isRoot = true;
+        }
         //Swap positions with predecessor or successor
         //Delete n and update pointers
         removeHelper(n);
         removeFix(p,diff);
-        
         AVLNode<Key,Value>* avlr = static_cast<AVLNode<Key,Value>*>(BinarySearchTree<Key,Value>::root_);
-        if (avlr && BinarySearchTree<Key,Value>::getHeight(avlr->getLeft()) - BinarySearchTree<Key,Value>::getHeight(avlr->getRight()) > 1){
-                if (avlr->getRight() && avlr->getRight()->getLeft()){
-                    avlr->updateBalance(1);
-                }
-                else if (avlr->getRight()) {
-                    avlr->getRight()->updateBalance(-1);
-                }
-                rotateRight(avlr);
-        }
-        else if (avlr && BinarySearchTree<Key,Value>::getHeight(avlr->getRight()) - BinarySearchTree<Key,Value>::getHeight(avlr->getLeft()) > 1){
-                if (avlr->getLeft() && avlr->getLeft()->getRight()){
-                    avlr->updateBalance(-1);
-                }
-                else if (avlr->getLeft()){
-                    avlr->getLeft()->updateBalance(1);
-                }
+        if (isRoot){
+            if (avlr && avlr->getBalance() > 1){
                 rotateLeft(avlr);
+            }
+            else if (avlr && avlr->getBalance() < -1){
+                rotateRight(avlr);
+            }
         }
-        
     }
 }
 template<class Key, class Value>
@@ -585,7 +639,7 @@ void AVLTree<Key,Value>::removeFix(AVLNode<Key,Value>* n, int diff){
     }
     if (diff == -1){
         //Case 1
-        if (n->getBalance() == -2){
+        if (n->getBalance() == -2 || n->getBalance() + diff == -2){
             AVLNode<Key,Value>* c = n->getLeft();
             //Case 1a
             if (c->getBalance() == -1){
@@ -635,7 +689,7 @@ void AVLTree<Key,Value>::removeFix(AVLNode<Key,Value>* n, int diff){
     }
     else if (diff == 1){
         //Case 1
-        if (n->getBalance() == 2){
+        if (n->getBalance() == 2 || n->getBalance() + diff == 2){
             AVLNode<Key,Value>* c = n->getRight();
             //Case 1a
             if (c->getBalance() == 1){
@@ -676,6 +730,7 @@ void AVLTree<Key,Value>::removeFix(AVLNode<Key,Value>* n, int diff){
         //Case 2
         else if (n->getBalance() + diff == 1){
             n->setBalance(1);
+            removeFix(p, ndiff);
         }
         //Case 3
         else if (n->getBalance() + diff == 0){
